@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
 <title>Organic Chemistry Short Notes — Allen Handbook Quick Reference</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>
 window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] } };
@@ -47,14 +50,61 @@ window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\
     body.dark-mode nav.sticky-nav { background:#0b1120 !important; border-color:#1e293b !important; }
     body.dark-mode nav.sticky-nav a { color:#94a3b8 !important; }
     body.dark-mode #searchBox { background:#1e293b; color:#e2e8f0; }
+
+    /* ===================== MOBILE / ANDROID CHROME + iOS SAFARI FIXES ===================== */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overflow-x: hidden; }
+    body { overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+    header.gradient-header { padding-top: calc(1.5rem + env(safe-area-inset-top)); }
+    table.ref-table { font-size: 0.8rem; }
+    @media (max-width: 767px) {
+        #searchBox, select { font-size: 16px !important; }
+        header.gradient-header h1 { font-size: 1.4rem; }
+        header.gradient-header .mt-4.flex.flex-wrap { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        header.gradient-header .mt-4.flex.flex-wrap::-webkit-scrollbar { display: none; }
+        header.gradient-header .tool-btn-sm { flex: 0 0 auto; min-height: 40px; }
+        nav.sticky-nav a { padding: 0.35rem 0; display: inline-block; min-height: 32px; }
+        .reviewed-check { min-height: 36px; }
+    }
+    @media (hover: none) {
+        .note-card:hover { box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+    }
+    mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+
+    /* ===================== GAMIFIED MODE ===================== */
+    body.gamified {
+        --bg-color:#0a0710; --bg-glow:#2a0f3a; --card-bg:#130b1a; --panel-bg:#170d20;
+        --gold:#ff6a00; --gold-bright:#ffcf3d; --xp:#ff3d7d; --chem:#39ff88; --maths:#c77dff;
+        --text-main:#f3ecff; --text-muted:#9a83b0; --border:#3a2452; --lb:#ffd93d;
+        background: radial-gradient(ellipse 900px 500px at 50% -10%, var(--bg-glow) 0%, var(--bg-color) 60%) fixed, var(--bg-color) !important;
+        color: var(--text-main); font-family:'Roboto',sans-serif;
+    }
+    body.gamified header.gradient-header { background: radial-gradient(ellipse 700px 300px at 50% 0%, var(--bg-glow) 0%, var(--bg-color) 70%), var(--bg-color) !important; border-bottom:1px solid var(--border); }
+    body.gamified h1, body.gamified h2 { font-family:'Orbitron',sans-serif; letter-spacing:1px; background: linear-gradient(90deg, var(--gold-bright), var(--xp) 60%, var(--maths)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    body.gamified .note-card { background: var(--card-bg) !important; border-color: var(--border) !important; }
+    body.gamified .note-card:hover { box-shadow: 0 0 22px -4px rgba(255,106,0,0.4); }
+    body.gamified [class*="text-slate-8"], body.gamified [class*="text-slate-7"] { color: var(--text-main) !important; }
+    body.gamified [class*="text-slate-6"], body.gamified [class*="text-slate-5"] { color: var(--text-muted) !important; }
+    body.gamified [class*="bg-slate-50"] { background-color: var(--panel-bg) !important; }
+    body.gamified table.ref-table th { background: var(--panel-bg) !important; color: var(--gold-bright) !important; font-family:'Rajdhani',sans-serif; }
+    body.gamified table.ref-table tr:nth-child(even) { background: var(--panel-bg) !important; }
+    body.gamified table.ref-table td { border-color: var(--border) !important; }
+    body.gamified nav.sticky-nav { background: var(--bg-color) !important; border-color: var(--border) !important; }
+    body.gamified nav.sticky-nav a { color: var(--text-muted) !important; font-family:'Rajdhani',sans-serif; font-weight:600; }
+    body.gamified nav.sticky-nav a:hover { color: var(--gold-bright) !important; }
+    body.gamified #searchBox { background: var(--panel-bg) !important; color: var(--text-main) !important; }
+    body.gamified .tool-btn-sm { background: rgba(255,106,0,0.1); border-color: var(--border); font-family:'Rajdhani',sans-serif; font-weight:700; }
+    body.gamified .progress-fill-sm { background: linear-gradient(90deg, var(--xp), var(--gold-bright)); box-shadow: 0 0 8px var(--xp); }
+    body.gamified .reagent-num { background: linear-gradient(135deg, var(--gold), var(--xp)); }
+    body.gamified .reviewed-check.is-reviewed { background: rgba(57,255,136,0.12); border-color: var(--chem); color: var(--chem); }
+    body.gamified #gamifiedBtnSN.active-on { background: linear-gradient(90deg, var(--gold), var(--xp), var(--maths)); border-color: var(--gold-bright); color:#fff; }
 </style>
 </head>
 <body class="bg-slate-100">
 
 <header class="gradient-header text-white">
     <div class="max-w-6xl mx-auto px-4 py-8">
-        <a href="index.html" class="inline-flex items-center gap-2 text-teal-200 hover:text-white text-sm mb-3 transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to Reaction Master Guide
+        <a href="organic.html" class="inline-flex items-center gap-2 text-teal-200 hover:text-white text-sm mb-3 transition">
+            <i class="fa-solid fa-arrow-left"></i> Back to Reaction Field Guide
         </a>
         <h1 class="text-3xl md:text-4xl font-bold flex items-center gap-3">
             <i class="fa-solid fa-book-bookmark text-amber-300"></i> Organic Chemistry — Short Notes
@@ -66,6 +116,7 @@ window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\
         <div class="mt-4 flex flex-wrap items-center gap-2">
             <button id="darkModeBtnSN" onclick="toggleDarkModeSN()" class="tool-btn-sm"><i class="fa-solid fa-moon"></i> <span id="darkModeLabelSN">Dark Mode</span></button>
             <button id="collapseAllBtn" onclick="toggleCollapseAll()" class="tool-btn-sm"><i class="fa-solid fa-compress"></i> <span id="collapseAllLabel">Collapse All Sections</span></button>
+    <button id="gamifiedBtnSN" onclick="toggleGamifiedSN()" class="tool-btn-sm"><i class="fa-solid fa-gamepad"></i> <span id="gamifiedLabelSN">Gamified Mode</span></button>
             <div class="flex items-center gap-2 ml-auto bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
                 <span class="text-xs font-semibold" id="reviewedCountLabel">0 / 12 sections reviewed</span>
                 <div class="progress-track-sm w-28"><div class="progress-fill-sm" id="reviewedFillSN" style="width:0%"></div></div>
@@ -76,7 +127,7 @@ window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\
 
 <script>
 // ---- Shared dark-mode + collapsible + reviewed-progress interactivity ----
-const SN_KEYS = { dark: "jee_ocr_darkmode_v1", reviewed: "jee_ocr_notes_reviewed_v1" };
+const SN_KEYS = { dark: "jee_ocr_darkmode_v1", reviewed: "jee_ocr_notes_reviewed_v1", gamified: "jee_gamified_mode_v1" };
 function loadSet(key) { try { const r = localStorage.getItem(key); return r ? new Set(JSON.parse(r)) : new Set(); } catch(e) { return new Set(); } }
 function saveSet(key, s) { try { localStorage.setItem(key, JSON.stringify([...s])); } catch(e) {} }
 let reviewedSections = loadSet(SN_KEYS.reviewed);
@@ -87,6 +138,14 @@ function toggleDarkModeSN() {
     document.body.classList.toggle('dark-mode', on);
     document.getElementById('darkModeLabelSN').textContent = on ? 'Light Mode' : 'Dark Mode';
     try { localStorage.setItem(SN_KEYS.dark, on ? "1" : "0"); } catch(e) {}
+}
+
+function toggleGamifiedSN() {
+    const on = !document.body.classList.contains('gamified');
+    document.body.classList.toggle('gamified', on);
+    document.getElementById('gamifiedLabelSN').textContent = on ? 'Battle Mode: ON' : 'Gamified Mode';
+    document.getElementById('gamifiedBtnSN').classList.toggle('active-on', on);
+    try { localStorage.setItem(SN_KEYS.gamified, on ? "1" : "0"); } catch(e) {}
 }
 
 function toggleCollapseAll() {
@@ -161,7 +220,10 @@ function wireUpSections() {
 
 document.addEventListener('DOMContentLoaded', () => {
     wireUpSections();
-    try { if (localStorage.getItem(SN_KEYS.dark) === "1") { document.body.classList.add('dark-mode'); document.getElementById('darkModeLabelSN').textContent = 'Light Mode'; } } catch(e) {}
+    try {
+        if (localStorage.getItem(SN_KEYS.dark) === "1") { document.body.classList.add('dark-mode'); document.getElementById('darkModeLabelSN').textContent = 'Light Mode'; }
+        if (localStorage.getItem(SN_KEYS.gamified) === "1") { document.body.classList.add('gamified'); document.getElementById('gamifiedLabelSN').textContent = 'Battle Mode: ON'; document.getElementById('gamifiedBtnSN').classList.add('active-on'); }
+    } catch(e) {}
 });
 </script>
 
