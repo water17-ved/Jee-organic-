@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organic Chemistry Short Notes — Allen Handbook Quick Reference</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+window.MathJax = { tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] } };
+</script>
+<style>
+    .gradient-header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 40%, #0d9488 100%); }
+    .note-card { background:#fff; border:1px solid #e2e8f0; border-radius:0.75rem; box-shadow:0 1px 2px rgba(0,0,0,0.04); }
+    .note-card:hover { box-shadow:0 4px 14px rgba(0,0,0,0.08); }
+    .chip { display:inline-block; padding:0.15rem 0.6rem; border-radius:9999px; font-size:0.7rem; font-weight:600; }
+    table.ref-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    table.ref-table th { background:#0f172a; color:#fff; text-align:left; padding:0.5rem 0.75rem; position:sticky; top:0; }
+    table.ref-table td { padding:0.5rem 0.75rem; border-bottom:1px solid #e2e8f0; vertical-align:top; }
+    table.ref-table tr:nth-child(even) { background:#f8fafc; }
+    .reagent-num { display:inline-flex; align-items:center; justify-content:center; width:1.5rem; height:1.5rem; border-radius:9999px; background:#0d9488; color:#fff; font-size:0.7rem; font-weight:700; flex-shrink:0; }
+    #searchBox:focus { outline:2px solid #0d9488; }
+    .sticky-nav { position: sticky; top: 0; z-index: 40; }
+
+    /* ---- Interactivity additions ---- */
+    .section-head { cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:0.75rem; }
+    .section-chevron { transition: transform 0.25s ease; color:#94a3b8; }
+    .note-card.collapsed .note-body { display:none; }
+    .note-card.collapsed .section-chevron { transform: rotate(-90deg); }
+    .reviewed-check { display:inline-flex; align-items:center; gap:0.35rem; font-size:0.7rem; font-weight:700; padding:0.25rem 0.6rem; border-radius:9999px; border:1px solid #cbd5e1; color:#64748b; background:#f8fafc; cursor:pointer; white-space:nowrap; }
+    .reviewed-check.is-reviewed { background:#dcfce7; border-color:#86efac; color:#15803d; }
+    .note-card.is-reviewed { box-shadow: 0 0 0 2px #22c55e inset; }
+    .tool-btn-sm { display:inline-flex; align-items:center; gap:0.35rem; padding:0.4rem 0.8rem; border-radius:0.5rem; font-size:0.75rem; font-weight:700; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.1); color:#fff; cursor:pointer; transition: all 0.18s ease; }
+    .tool-btn-sm:hover { background:rgba(255,255,255,0.22); transform:translateY(-1px); }
+    .progress-track-sm { background: rgba(255,255,255,0.2); border-radius:999px; height:6px; overflow:hidden; width:100%; }
+    .progress-fill-sm { background:#fbbf24; height:100%; border-radius:999px; transition: width 0.4s ease; }
+
+    body.dark-mode { background-color:#0b1120 !important; color:#e2e8f0; }
+    body.dark-mode .note-card { background:#131c31 !important; border-color:#263244 !important; }
+    body.dark-mode table.ref-table td { border-color:#263244 !important; }
+    body.dark-mode table.ref-table tr:nth-child(even) { background:#0f172a !important; }
+    body.dark-mode [class*="text-slate-8"], body.dark-mode [class*="text-slate-7"] { color:#cbd5e1 !important; }
+    body.dark-mode [class*="text-slate-6"], body.dark-mode [class*="text-slate-5"] { color:#94a3b8 !important; }
+    body.dark-mode [class*="bg-slate-50"] { background-color:#0f172a !important; }
+    body.dark-mode nav.sticky-nav { background:#0b1120 !important; border-color:#1e293b !important; }
+    body.dark-mode nav.sticky-nav a { color:#94a3b8 !important; }
+    body.dark-mode #searchBox { background:#1e293b; color:#e2e8f0; }
+</style>
+</head>
+<body class="bg-slate-100">
+
+<header class="gradient-header text-white">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <a href="index.html" class="inline-flex items-center gap-2 text-teal-200 hover:text-white text-sm mb-3 transition">
+            <i class="fa-solid fa-arrow-left"></i> Back to Reaction Master Guide
+        </a>
+        <h1 class="text-3xl md:text-4xl font-bold flex items-center gap-3">
+            <i class="fa-solid fa-book-bookmark text-amber-300"></i> Organic Chemistry — Short Notes
+        </h1>
+        <p class="text-slate-200 mt-2 max-w-3xl">A condensed quick-reference distilled from the <span class="font-semibold text-white">Organic Chemistry</span> section (pages 127–182) of the Allen JEE Chemistry Handbook — nomenclature rules, mechanism shorthand, distinguishing tests, the full "nutshell" reagent list, name reactions, polymers, and carbohydrates, all on one scrollable page.</p>
+        <div class="mt-4">
+            <input id="searchBox" type="text" placeholder="Search these notes... (e.g. Tollens, Sandmeyer, Nylon)" class="w-full md:w-96 px-4 py-2 rounded-lg text-slate-800 text-sm">
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+            <button id="darkModeBtnSN" onclick="toggleDarkModeSN()" class="tool-btn-sm"><i class="fa-solid fa-moon"></i> <span id="darkModeLabelSN">Dark Mode</span></button>
+            <button id="collapseAllBtn" onclick="toggleCollapseAll()" class="tool-btn-sm"><i class="fa-solid fa-compress"></i> <span id="collapseAllLabel">Collapse All Sections</span></button>
+            <div class="flex items-center gap-2 ml-auto bg-white/10 px-3 py-1.5 rounded-lg border border-white/20">
+                <span class="text-xs font-semibold" id="reviewedCountLabel">0 / 12 sections reviewed</span>
+                <div class="progress-track-sm w-28"><div class="progress-fill-sm" id="reviewedFillSN" style="width:0%"></div></div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<script>
+// ---- Shared dark-mode + collapsible + reviewed-progress interactivity ----
+const SN_KEYS = { dark: "jee_ocr_darkmode_v1", reviewed: "jee_ocr_notes_reviewed_v1" };
+function loadSet(key) { try { const r = localStorage.getItem(key); return r ? new Set(JSON.parse(r)) : new Set(); } catch(e) { return new Set(); } }
+function saveSet(key, s) { try { localStorage.setItem(key, JSON.stringify([...s])); } catch(e) {} }
+let reviewedSections = loadSet(SN_KEYS.reviewed);
+let allCollapsed = false;
+
+function toggleDarkModeSN() {
+    const on = !document.body.classList.contains('dark-mode');
+    document.body.classList.toggle('dark-mode', on);
+    document.getElementById('darkModeLabelSN').textContent = on ? 'Light Mode' : 'Dark Mode';
+    try { localStorage.setItem(SN_KEYS.dark, on ? "1" : "0"); } catch(e) {}
+}
+
+function toggleCollapseAll() {
+    allCollapsed = !allCollapsed;
+    document.querySelectorAll('.note-card').forEach(sec => sec.classList.toggle('collapsed', allCollapsed));
+    document.getElementById('collapseAllLabel').textContent = allCollapsed ? 'Expand All Sections' : 'Collapse All Sections';
+}
+
+function toggleSectionCollapse(id) {
+    document.getElementById(id).classList.toggle('collapsed');
+}
+
+function toggleReviewed(id, el) {
+    if (reviewedSections.has(id)) reviewedSections.delete(id); else reviewedSections.add(id);
+    saveSet(SN_KEYS.reviewed, reviewedSections);
+    const isRev = reviewedSections.has(id);
+    el.classList.toggle('is-reviewed', isRev);
+    el.innerHTML = isRev ? '<i class="fa-solid fa-circle-check"></i> Reviewed' : '<i class="fa-regular fa-circle"></i> Mark Reviewed';
+    document.getElementById(id).classList.toggle('is-reviewed', isRev);
+    updateReviewedProgress();
+}
+
+function updateReviewedProgress() {
+    const total = document.querySelectorAll('.note-card').length;
+    const label = document.getElementById('reviewedCountLabel');
+    const fill = document.getElementById('reviewedFillSN');
+    if (label) label.textContent = `${reviewedSections.size} / ${total} sections reviewed`;
+    if (fill) fill.style.width = total ? `${(reviewedSections.size / total) * 100}%` : '0%';
+}
+
+// Wrap each note-card's content (everything after its <h2>) into a collapsible body,
+// and wire up a click-to-collapse header + a "mark reviewed" chip.
+function wireUpSections() {
+    document.querySelectorAll('.note-card').forEach(sec => {
+        const h2 = sec.querySelector('h2');
+        if (!h2 || sec.dataset.wired) return;
+        sec.dataset.wired = "1";
+
+        const body = document.createElement('div');
+        body.className = 'note-body';
+        let node = h2.nextSibling;
+        const toMove = [];
+        while (node) { toMove.push(node); node = node.nextSibling; }
+        toMove.forEach(n => body.appendChild(n));
+        sec.appendChild(body);
+
+        const headWrap = document.createElement('div');
+        headWrap.className = 'section-head';
+        h2.parentNode.insertBefore(headWrap, h2);
+        headWrap.appendChild(h2);
+
+        const chevron = document.createElement('i');
+        chevron.className = 'fa-solid fa-chevron-down section-chevron';
+
+        const chip = document.createElement('div');
+        chip.className = 'reviewed-check' + (reviewedSections.has(sec.id) ? ' is-reviewed' : '');
+        chip.innerHTML = reviewedSections.has(sec.id) ? '<i class="fa-solid fa-circle-check"></i> Reviewed' : '<i class="fa-regular fa-circle"></i> Mark Reviewed';
+        chip.addEventListener('click', (e) => { e.stopPropagation(); toggleReviewed(sec.id, chip); });
+
+        const rightWrap = document.createElement('div');
+        rightWrap.className = 'flex items-center gap-3 flex-shrink-0';
+        rightWrap.appendChild(chip);
+        rightWrap.appendChild(chevron);
+        headWrap.appendChild(rightWrap);
+
+        headWrap.addEventListener('click', () => sec.classList.toggle('collapsed'));
+
+        if (reviewedSections.has(sec.id)) sec.classList.add('is-reviewed');
+    });
+    updateReviewedProgress();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    wireUpSections();
+    try { if (localStorage.getItem(SN_KEYS.dark) === "1") { document.body.classList.add('dark-mode'); document.getElementById('darkModeLabelSN').textContent = 'Light Mode'; } } catch(e) {}
+});
+</script>
+
+<!-- Quick section nav -->
+<nav class="sticky-nav bg-white border-b border-slate-200 shadow-sm overflow-x-auto whitespace-nowrap px-4 py-2 text-sm">
+    <a href="#nomenclature" class="text-slate-600 hover:text-teal-700 mr-4">1. Nomenclature</a>
+    <a href="#mechanism" class="text-slate-600 hover:text-teal-700 mr-4">2. Mechanism Shorthand</a>
+    <a href="#tests" class="text-slate-600 hover:text-teal-700 mr-4">3. Distinguishing Tests</a>
+    <a href="#hydrocarbons" class="text-slate-600 hover:text-teal-700 mr-4">4. Hydrocarbons</a>
+    <a href="#haloalkanes" class="text-slate-600 hover:text-teal-700 mr-4">5. Haloalkanes & Grignard</a>
+    <a href="#alcohols" class="text-slate-600 hover:text-teal-700 mr-4">6. Alcohol/Phenol/Ether</a>
+    <a href="#acids" class="text-slate-600 hover:text-teal-700 mr-4">7. Carboxylic Acids</a>
+    <a href="#amines" class="text-slate-600 hover:text-teal-700 mr-4">8. Amines & Diazonium</a>
+    <a href="#reagents" class="text-slate-600 hover:text-teal-700 mr-4">9. Reagents Nutshell</a>
+    <a href="#namerxn" class="text-slate-600 hover:text-teal-700 mr-4">10. Name Reactions</a>
+    <a href="#polymers" class="text-slate-600 hover:text-teal-700 mr-4">11. Polymers</a>
+    <a href="#carbs" class="text-slate-600 hover:text-teal-700 mr-4">12. Carbohydrates</a>
+</nav>
+
+<main class="max-w-6xl mx-auto px-4 py-8 space-y-10" id="notesRoot">
+
+    <!-- 1. NOMENCLATURE -->
+    <section id="nomenclature" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-list-ol text-teal-600 mr-2"></i>1. IUPAC Priority Order of Functional Groups</h2>
+        <p class="text-sm text-slate-500 mb-3">When a molecule has more than one functional group, the one highest in this list is named as the <strong>suffix</strong>; all others are cited as prefixes.</p>
+        <div class="overflow-x-auto">
+        <table class="ref-table">
+            <tr><th>#</th><th>Functional Group</th><th>Prefix</th><th>Suffix</th></tr>
+            <tr><td>1</td><td>Cations (e.g. -NH3+)</td><td>—</td><td>-aminium</td></tr>
+            <tr><td>2</td><td>Carboxylic acid (-COOH)</td><td>Carboxy</td><td>-oic acid</td></tr>
+            <tr><td>3</td><td>Sulphonic acid (-SO3H)</td><td>Sulpho</td><td>-sulphonic acid</td></tr>
+            <tr><td>4</td><td>Anhydride</td><td>—</td><td>-oic anhydride</td></tr>
+            <tr><td>5</td><td>Ester (-COOR)</td><td>Alkoxycarbonyl / Carbalkoxy</td><td>alkyl ...oate</td></tr>
+            <tr><td>6</td><td>Acid chloride (-COCl)</td><td>Chloroformyl / Chlorocarbonyl</td><td>-oyl chloride</td></tr>
+            <tr><td>7</td><td>Acid amide (-CONH2)</td><td>Carbamoyl / Amido</td><td>-amide</td></tr>
+            <tr><td>8</td><td>Nitrile / Cyanide (-C≡N)</td><td>Cyano</td><td>-nitrile</td></tr>
+            <tr><td>9</td><td>Aldehyde (-CHO)</td><td>Formyl / Oxo</td><td>-al</td></tr>
+            <tr><td>10</td><td>Ketone (>C=O)</td><td>Keto / Oxo</td><td>-one</td></tr>
+            <tr><td>11</td><td>Alcohol (-OH)</td><td>Hydroxy</td><td>-ol</td></tr>
+            <tr><td>12</td><td>Thioalcohol (-SH)</td><td>Mercapto</td><td>-thiol</td></tr>
+            <tr><td>13</td><td>Amine (-NH2)</td><td>Amino</td><td>-amine</td></tr>
+            <tr><td>14</td><td>Ether (-O-R)</td><td>Alkoxy</td><td>— (named as substituent)</td></tr>
+            <tr><td>15</td><td>Oxirane (epoxide)</td><td>Epoxy</td><td>—</td></tr>
+            <tr><td>16</td><td>Nitro (-NO2)</td><td>Nitro</td><td>—</td></tr>
+            <tr><td>17</td><td>Nitroso (-NO)</td><td>Nitroso</td><td>—</td></tr>
+            <tr><td>18</td><td>Halide (-X)</td><td>Halo</td><td>—</td></tr>
+            <tr><td>19</td><td>Double bond (C=C)</td><td>—</td><td>-ene</td></tr>
+            <tr><td>20</td><td>Triple bond (C≡C)</td><td>—</td><td>-yne</td></tr>
+        </table>
+        </div>
+    </section>
+
+    <!-- 2. MECHANISM SHORTHAND -->
+    <section id="mechanism" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-arrows-split-up-and-left text-teal-600 mr-2"></i>2. Reaction Mechanism Shorthand</h2>
+        <p class="text-sm text-slate-500 mb-3">Abbreviations the handbook uses throughout its mechanism tables:</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>FrSR</b><br>Free Radical Substitution</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>ESR</b><br>Electrophilic Substitution</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>NSR</b><br>Nucleophilic Substitution</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>SNAE</b><br>Substitution Nucleophilic (Addition–Elimination)</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>FrAR</b><br>Free Radical Addition</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>NAR</b><br>Nucleophilic Addition</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>EAR</b><br>Electrophilic Addition</div>
+            <div class="bg-slate-50 rounded-lg p-3 border border-slate-200"><b>FrER</b><br>Free Radical Elimination</div>
+        </div>
+        <p class="text-sm text-slate-500 mt-3"><b>Isomerism recap:</b> Structural (Chain, Position, Ring-Chain, Functional, Metamerism, Tautomerism) vs Stereoisomerism (Geometrical, Optical, Conformational) — full worked cards for every one of these are in the main Reaction Guide's <i>Isomerism</i> chapter.</p>
+    </section>
+
+    <!-- 3. DISTINGUISHING TESTS -->
+    <section id="tests" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-flask-vial text-teal-600 mr-2"></i>3. Quick Distinguishing Tests</h2>
+        <div class="overflow-x-auto">
+        <table class="ref-table">
+            <tr><th>Test</th><th>Positive For</th><th>Observation</th></tr>
+            <tr><td>Tollens' Reagent</td><td>Aldehydes (incl. terminal alkyne, HCOOH); aromatic aldehydes too</td><td>Silver mirror on tube walls</td></tr>
+            <tr><td>Fehling's Solution</td><td>Aliphatic aldehydes (PhCHO gives negative)</td><td>Brick-red Cu₂O precipitate</td></tr>
+            <tr><td>Benedict's Solution</td><td>Aldehydes (ketones negative)</td><td>RCHO → RCO₂⁻ ; colour change</td></tr>
+            <tr><td>Iodoform Test (I₂/NaOH)</td><td>CH₃CO- group or CH₃CH(OH)- group</td><td>Yellow CHI₃ precipitate</td></tr>
+            <tr><td>2,4-DNP Test</td><td>Carbonyl group (aldehyde/ketone)</td><td>Orange/yellow precipitate</td></tr>
+            <tr><td>Br₂ Water</td><td>Unsaturation; aniline/phenol ring</td><td>Decolourises / 2,4,6-tribromo precipitate</td></tr>
+            <tr><td>Baeyer's Reagent (cold dil. KMnO₄)</td><td>Unsaturation</td><td>Purple → colourless, syn-diol forms</td></tr>
+            <tr><td>Lucas Test (ZnCl₂/HCl)</td><td>Distinguishes 1°/2°/3° alcohols</td><td>3° turns cloudy instantly; 1° needs heat</td></tr>
+            <tr><td>Victor Meyer's Test</td><td>Distinguishes 1°/2°/3° nitroalkanes</td><td>Red / blue / no colour respectively</td></tr>
+            <tr><td>Carbylamine (Isocyanide) Test</td><td>Primary amine only</td><td>Foul smell of RNC</td></tr>
+            <tr><td>Hinsberg's Reagent (PhSO₂Cl)</td><td>Distinguishes 1°/2°/3° amines</td><td>1° soluble in alkali, 2° insoluble ppt, 3° no reaction</td></tr>
+            <tr><td>Ninhydrin Test</td><td>Amino acids</td><td>Purple (Ruhemann's purple) colour</td></tr>
+            <tr><td>Cu₂Cl₂ + NH₄OH</td><td>Terminal alkyne</td><td>Red precipitate</td></tr>
+            <tr><td>Ceric Ammonium Nitrate</td><td>-OH group (alcohol)</td><td>Red colour</td></tr>
+            <tr><td>NaHCO₃</td><td>Carboxylic acid (vs phenol/ester)</td><td>Brisk effervescence of CO₂</td></tr>
+        </table>
+        </div>
+    </section>
+
+    <!-- 4. HYDROCARBONS -->
+    <section id="hydrocarbons" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-fire text-teal-600 mr-2"></i>4. Hydrocarbons — Key Facts</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li><b>Free-radical halogenation reactivity</b> of C–H bonds: 3° &gt; 2° &gt; 1° &gt; CH₄; but <b>selectivity</b> is highest for bromination and lowest for chlorination/fluorination (F₂ is almost unselective and explosive).</li>
+            <li><b>Halogen reactivity</b> towards free-radical substitution: F₂ &gt; Cl₂ &gt; Br₂ &gt; I₂ (I₂ substitution is reversible/non-feasible without an oxidiser).</li>
+            <li><b>Knocking tendency</b> of fuels decreases in the order: straight-chain alkanes &gt; branched alkanes &gt; alkenes &gt; aromatics/branched — tetraethyl lead (TEL) is used as an anti-knock additive.</li>
+            <li><b>Alkenes:</b> Markovnikov addition (HX) gives the more stable carbocation product; peroxide effect reverses HBr addition only (anti-Markovnikov, via free-radical mechanism), never with HCl or HI.</li>
+            <li><b>Alkynes:</b> terminal alkynes are acidic (pKa ≈ 25) and give a red precipitate with ammoniacal Cu₂Cl₂ or a white precipitate with ammoniacal AgNO₃ — non-terminal alkynes do not.</li>
+            <li><b>Ozonolysis</b> of an alkyne gives a diketone or diacid, requiring two equivalents of ozone (one more than the corresponding alkene).</li>
+        </ul>
+    </section>
+
+    <!-- 5. HALOALKANES & GRIGNARD -->
+    <section id="haloalkanes" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-atom text-teal-600 mr-2"></i>5. Haloalkanes & Grignard Reagent</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li><b>SN1 vs SN2:</b> 3° halides go SN1 (racemisation, rearrangement possible); 1° halides go SN2 (Walden inversion); 2° halides can go either way depending on solvent/nucleophile strength.</li>
+            <li><b>Grignard reagent (RMgX)</b> reacts by three broad pathways: (i) acid–base reaction with any active H (destroys the reagent), (ii) nucleophilic addition (NAR) to carbonyls, epoxides, CO₂, nitriles, (iii) nucleophilic substitution (NSR) with acid chlorides/esters.</li>
+            <li>RMgX + HCHO → 1° alcohol; + other aldehyde → 2° alcohol; + ketone → 3° alcohol; + CO₂ (then H₃O⁺) → carboxylic acid; + epoxide (then H⁺) → primary alcohol two carbons longer.</li>
+            <li><b>Wurtz reaction:</b> 2 R–X + 2Na → R–R (best for making symmetrical alkanes; poor for unsymmetrical due to mixture of products).</li>
+            <li><b>Finkelstein reaction:</b> R–Cl/Br + NaI (in dry acetone) → R–I (driven by NaCl/NaBr precipitating out of acetone).</li>
+        </ul>
+    </section>
+
+    <!-- 6. ALCOHOL/PHENOL/ETHER -->
+    <section id="alcohols" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-droplet text-teal-600 mr-2"></i>6. Alcohol, Phenol & Ether</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li><b>Acidity order:</b> Carboxylic acid &gt; Carbonic acid &gt; Phenol &gt; Water &gt; Alcohol; phenol is acidic because the phenoxide ion is resonance-stabilised by the ring.</li>
+            <li><b>Dehydration (H₂SO₄/Δ)</b> of alcohols follows the Saytzeff rule and proceeds through a carbocation (E1) — rearranged alkenes are possible.</li>
+            <li><b>Oxidation ladder:</b> 1° alcohol → aldehyde → acid (with strong oxidants like K₂Cr₂O₇/H⁺); PCC or Collins reagent stops cleanly at the aldehyde. 2° alcohol → ketone (no further oxidation without C–C cleavage). 3° alcohol resists oxidation (no α-H on the carbinol carbon).</li>
+            <li><b>Williamson ether synthesis:</b> sodium alkoxide/phenoxide + alkyl halide → ether (SN2 — the alkyl halide must be 1° for a good yield).</li>
+            <li><b>Reimer–Tiemann reaction:</b> phenol + CHCl₃ + KOH (via dichlorocarbene) → ortho-hydroxybenzaldehyde (salicylaldehyde) as the major product.</li>
+            <li><b>Kolbe's reaction:</b> sodium phenoxide + CO₂ (high pressure/temp) then H⁺ → salicylic acid (ortho product favoured, chelation-stabilised).</li>
+        </ul>
+    </section>
+
+    <!-- 7. CARBOXYLIC ACIDS -->
+    <section id="acids" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-vial-circle-check text-teal-600 mr-2"></i>7. Carboxylic Acids</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li><b>HVZ reaction (Hell–Volhard–Zelinsky):</b> carboxylic acid with an α-H + Br₂/red P → α-bromo acid (proceeds via the acid's enol-like bromide intermediate).</li>
+            <li><b>Decarboxylation:</b> sodium salt of a carboxylic acid + soda lime (NaOH + CaO), Δ → alkane one carbon shorter, losing CO₂.</li>
+            <li><b>Esterification</b> (Fischer): RCOOH + R'OH ⇌ RCOOR' + H₂O, catalysed by conc. H₂SO₄; reversible, so excess alcohol or removal of water drives it forward.</li>
+            <li><b>Acidic strength order</b> for substituted acids tracks the −I/−M effect of the substituent and its distance from −COOH: closer and stronger electron-withdrawing groups increase acidity.</li>
+        </ul>
+    </section>
+
+    <!-- 8. AMINES & DIAZONIUM -->
+    <section id="amines" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-ring text-teal-600 mr-2"></i>8. Amines & Benzene Diazonium Chloride</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li><b>Basicity in water:</b> for methyl-substituted amines, 2° &gt; 1° &gt; 3° &gt; NH₃ (steric hindrance + solvation effects on the 3° amine's lone pair); in the gas phase the order is purely +I driven: 3° &gt; 2° &gt; 1° &gt; NH₃.</li>
+            <li>Aniline is far less basic than aliphatic amines — its nitrogen lone pair delocalises into the aromatic ring.</li>
+            <li><b>HNO₂ (NaNO₂ + HCl):</b> 1° aliphatic amine → alcohol + N₂; aniline at 0–5 °C → benzene diazonium chloride (stable only in the cold); at higher temperature aniline gives phenol directly.</li>
+            <li><b>Diazonium salt reactions:</b> Sandmeyer (CuCl/CuBr/CuCN, replaces N₂⁺ with Cl/Br/CN) and Gattermann (Cu/HX, same outcome, milder) both proceed via a radical pathway; with KI → iodobenzene needs no catalyst; with HBF₄ then Δ (Balz–Schiemann) → fluorobenzene; with H₃PO₂/H₂O → benzene (deamination); coupling with phenol/aniline (below 5 °C, mild base) → azo dye.</li>
+            <li><b>Hinsberg separation:</b> benzenesulphonyl chloride distinguishes and can separate 1°, 2°, and 3° amines by their differing solubility behaviour with the sulphonamide product.</li>
+        </ul>
+    </section>
+
+    <!-- 9. ORGANIC REAGENTS NUTSHELL -->
+    <section id="reagents" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-flask text-teal-600 mr-2"></i>9. Organic Reagents — Full Nutshell List</h2>
+        <p class="text-sm text-slate-500 mb-3">The handbook's own "nutshell review & preview" reagent index — every reagent JEE expects you to recognise on sight, condensed to one line each.</p>
+        <div class="grid md:grid-cols-2 gap-x-6 gap-y-2 text-sm" id="reagentGrid"></div>
+    </section>
+
+    <!-- 10. NAME REACTIONS -->
+    <section id="namerxn" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-signature text-teal-600 mr-2"></i>10. Organic Name Reactions — Nutshell Index</h2>
+        <p class="text-sm text-slate-500 mb-3">Substrate → Reagent/Condition → Product, at a glance. (Full mechanism cards for most of these already live in the main Reaction Guide.)</p>
+        <div class="overflow-x-auto">
+        <table class="ref-table">
+            <tr><th>Name Reaction</th><th>Substrate</th><th>Reagent / Condition</th><th>Product</th></tr>
+            <tr><td>Aldol Condensation</td><td>Aldehyde/ketone with α-H</td><td>Dil. NaOH / OH⁻</td><td>β-Hydroxy carbonyl → α,β-unsaturated carbonyl (−H₂O)</td></tr>
+            <tr><td>Claisen Condensation</td><td>Ester with α-H</td><td>NaOEt / EtO⁻</td><td>β-Keto ester</td></tr>
+            <tr><td>Perkin Condensation</td><td>Aromatic aldehyde + acid anhydride</td><td>Sodium salt of the acid, Δ</td><td>Cinnamic acid derivative</td></tr>
+            <tr><td>Benzoin Condensation</td><td>2 × Aromatic aldehyde</td><td>KCN / EtOH</td><td>Benzoin (α-hydroxy ketone)</td></tr>
+            <tr><td>Cannizzaro Reaction</td><td>Aldehyde with no α-H</td><td>Conc. NaOH/KOH</td><td>Alcohol + carboxylate (disproportionation)</td></tr>
+            <tr><td>Haloform Reaction</td><td>Methyl ketone / CH₃CH(OH)-</td><td>NaOX (X₂ + NaOH)</td><td>CHX₃ + carboxylate</td></tr>
+            <tr><td>Carbylamine (Isocyanide) Test</td><td>1° amine</td><td>CHCl₃ + alc. KOH</td><td>Isocyanide (foul smell)</td></tr>
+            <tr><td>Reimer–Tiemann Reaction</td><td>Phenol</td><td>CHCl₃ + KOH (via :CCl₂)</td><td>o-Hydroxybenzaldehyde</td></tr>
+            <tr><td>Kolbe's Schmidt Reaction</td><td>Sodium phenoxide</td><td>CO₂, 125 °C, pressure; then H⁺</td><td>Salicylic acid</td></tr>
+            <tr><td>Hofmann Bromamide Degradation</td><td>Amide (RCONH₂)</td><td>Br₂ / KOH</td><td>Primary amine, one carbon shorter</td></tr>
+            <tr><td>Curtius Reaction</td><td>Acyl azide (RCON₃)</td><td>Δ (via nitrene, isocyanate)</td><td>Primary amine</td></tr>
+            <tr><td>Schmidt Reaction</td><td>Carboxylic acid</td><td>HN₃ / conc. H₂SO₄</td><td>Primary amine (via isocyanate)</td></tr>
+            <tr><td>Lossen Rearrangement</td><td>Hydroxamic acid</td><td>Acetic anhydride / base</td><td>Primary amine</td></tr>
+            <tr><td>Hell–Volhard–Zelinsky Reaction</td><td>Carboxylic acid with α-H</td><td>Br₂ / Red P</td><td>α-Bromo carboxylic acid</td></tr>
+            <tr><td>Hofmann Mustard Oil Reaction</td><td>1° aliphatic amine + CS₂</td><td>HgCl₂, Δ</td><td>Isothiocyanate + HgS (black)</td></tr>
+            <tr><td>Hunsdiecker Reaction</td><td>Silver salt of carboxylic acid</td><td>Br₂ / CCl₄, 80 °C</td><td>Alkyl/aryl bromide (one C shorter)</td></tr>
+            <tr><td>Kolbe Electrolytic Reaction</td><td>Alkali metal carboxylate</td><td>Electrolysis</td><td>Alkane (via radical coupling)</td></tr>
+            <tr><td>Mendius Reaction</td><td>Alkyl/aryl cyanide</td><td>Na / C₂H₅OH</td><td>Primary amine</td></tr>
+            <tr><td>Rosenmund Reduction</td><td>Acid chloride</td><td>H₂, Pd/BaSO₄ (poisoned), boiling xylene</td><td>Aldehyde</td></tr>
+            <tr><td>Stephen Reaction</td><td>Alkyl/aryl cyanide</td><td>(i) SnCl₂/HCl (ii) H₂O</td><td>Aldehyde</td></tr>
+            <tr><td>Sabatier–Senderens Reaction</td><td>Unsaturated hydrocarbon</td><td>Raney Ni/H₂, 200–300 °C</td><td>Alkane</td></tr>
+            <tr><td>Sandmeyer Reaction</td><td>Benzene diazonium chloride</td><td>CuCl/HCl, CuBr/HBr, or CuCN/KCN, Δ</td><td>Halo- or cyanobenzene</td></tr>
+            <tr><td>Gattermann Reaction</td><td>Benzene diazonium chloride</td><td>Cu / HX, or CO+HCl+AlCl₃ (aldehyde variant)</td><td>Halobenzene, or aromatic aldehyde</td></tr>
+            <tr><td>Schotten–Baumann Reaction</td><td>Phenol / aniline / alcohol</td><td>NaOH + C₆H₅COCl</td><td>Benzoylated (ester/amide) product</td></tr>
+            <tr><td>Williamson Synthesis</td><td>Alkyl halide</td><td>Sodium alkoxide / phenoxide</td><td>Ether</td></tr>
+            <tr><td>Wurtz–Fittig Reaction</td><td>Alkyl halide + aryl halide</td><td>Na / dry ether</td><td>Alkylbenzene</td></tr>
+            <tr><td>Beckmann Rearrangement</td><td>Ketoxime</td><td>Conc. H₂SO₄ / PCl₅</td><td>Substituted amide</td></tr>
+            <tr><td>Fries Rearrangement</td><td>Phenyl ester</td><td>Anhydrous AlCl₃, Δ</td><td>o- and p-hydroxy ketone</td></tr>
+            <tr><td>Tischenko Reaction</td><td>Aldehyde (no α-H)</td><td>Al(OEt)₃ / Aluminium ethoxide</td><td>Ester</td></tr>
+            <tr><td>Knoevenagel Reaction</td><td>Active-methylene compound + aldehyde/ketone</td><td>Weak base (piperidine)</td><td>α,β-Unsaturated compound</td></tr>
+        </table>
+        </div>
+    </section>
+
+    <!-- 11. POLYMERS -->
+    <section id="polymers" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-link text-teal-600 mr-2"></i>11. Polymers</h2>
+        <h3 class="font-semibold text-slate-700 mt-2 mb-1">Addition Polymers</h3>
+        <div class="overflow-x-auto">
+        <table class="ref-table">
+            <tr><th>Polymer</th><th>Monomer(s)</th><th>Type</th></tr>
+            <tr><td>Polyethylene (Polythene)</td><td>CH₂=CH₂</td><td>Homopolymer, chain growth</td></tr>
+            <tr><td>Polypropylene</td><td>CH₃CH=CH₂</td><td>Homopolymer, linear, chain growth</td></tr>
+            <tr><td>Polystyrene</td><td>C₆H₅CH=CH₂</td><td>Homopolymer, linear, chain growth</td></tr>
+            <tr><td>Neoprene</td><td>Chloroprene (2-chloro-1,3-butadiene)</td><td>Homopolymer, chain growth</td></tr>
+            <tr><td>Buna-S (SBR / GRS)</td><td>1,3-Butadiene + Styrene</td><td>Copolymer, chain growth</td></tr>
+            <tr><td>PMMA (Perspex/Lucite)</td><td>Methyl methacrylate</td><td>Homopolymer</td></tr>
+            <tr><td>Polyacrylonitrile (Orlon/PAN)</td><td>CH₂=CH–CN</td><td>Homopolymer</td></tr>
+            <tr><td>PVC</td><td>CH₂=CH–Cl</td><td>Homopolymer, chain growth</td></tr>
+            <tr><td>Teflon (PTFE)</td><td>F₂C=CF₂</td><td>Homopolymer</td></tr>
+        </table>
+        </div>
+        <h3 class="font-semibold text-slate-700 mt-4 mb-1">Condensation Polymers</h3>
+        <div class="overflow-x-auto">
+        <table class="ref-table">
+            <tr><th>Polymer</th><th>Monomer(s)</th><th>Type</th></tr>
+            <tr><td>Terylene (Dacron)</td><td>Ethylene glycol + Terephthalic acid</td><td>Copolymer, step growth, linear (polyester)</td></tr>
+            <tr><td>Glyptal (Alkyd resin)</td><td>Ethylene glycol + Phthalic acid</td><td>Copolymer, linear step growth</td></tr>
+            <tr><td>Nylon-6,6</td><td>Adipic acid + Hexamethylenediamine</td><td>Copolymer, linear, step growth (polyamide)</td></tr>
+            <tr><td>Nylon-6,10</td><td>Hexamethylenediamine + Sebacic acid</td><td>Copolymer, linear, step growth</td></tr>
+            <tr><td>Nylon-6</td><td>Caprolactam</td><td>Homopolymer, linear</td></tr>
+            <tr><td>Bakelite</td><td>Phenol + Formaldehyde</td><td>Copolymer, step growth</td></tr>
+            <tr><td>Melamine Formaldehyde Resin</td><td>Melamine + Formaldehyde</td><td>Copolymer, step growth</td></tr>
+        </table>
+        </div>
+    </section>
+
+    <!-- 12. CARBOHYDRATES -->
+    <section id="carbs" class="note-card p-5 searchable">
+        <h2 class="text-xl font-bold text-slate-800 mb-1"><i class="fa-solid fa-seedling text-teal-600 mr-2"></i>12. Carbohydrates</h2>
+        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1.5">
+            <li>Carbohydrates are optically active polyhydroxy aldehydes or ketones (or compounds that hydrolyse to give them).</li>
+            <li><b>Monosaccharide</b> (CₙH₂ₙOₙ): a single unit that cannot be hydrolysed further into a simpler sugar.</li>
+            <li><b>Oligosaccharides:</b> hydrolyse to give 2–10 monosaccharide units, linked by glycosidic bonds; the 2-unit case is a <b>disaccharide</b>.</li>
+            <li><b>Polysaccharide:</b> hydrolyses to give more than ten monosaccharide units (e.g. starch, cellulose, glycogen).</li>
+            <li><b>Mutarotation:</b> either pure anomeric form of D-glucose (α, [α]D = +111°, or β, [α]D = +19°), when dissolved in water, drifts to the same equilibrium specific rotation of about +52.5° as the ring opens and recloses.</li>
+            <li>Glucose gives a negative test with iodine solution (no blue colour) — unlike starch.</li>
+        </ul>
+    </section>
+
+    <footer class="text-center text-xs text-slate-400 py-6">
+        Condensed from the Organic Chemistry section of the Allen JEE Chemistry Handbook, for personal revision use.
+    </footer>
+
+</main>
+
+<script>
+// ---- Reagent nutshell data (condensed, one line each) ----
+const reagents = [
+ ["Alcoholic KOH", "R–X → Alkene (E2 elimination)"],
+ ["Aluminium Ethoxide", "Aldehyde (no α-H) → Ester (Tischenko reaction)"],
+ ["Aqueous KOH/NaOH", "R–X → R–OH (SN); also drives Cannizzaro with aldehydes"],
+ ["Baeyer's Reagent (cold dil. KMnO₄)", "Alkene → syn-1,2-diol; detects unsaturation"],
+ ["Bromine water", "Detects unsaturation; aniline/phenol → 2,4,6-tribromo derivative"],
+ ["Benedict's Solution", "RCHO → RCO₂⁻ (ketones give negative test)"],
+ ["Cu₂Cl₂ + NH₄OH", "Detects terminal alkyne — red precipitate"],
+ ["CrO₂Cl₂ (Etard Reaction)", "ArCH₃ → ArCHO"],
+ ["CrO₃", "1° ROH → RCHO; 2° ROH → ketone; 3° ROH → no reaction"],
+ ["Fe + Br₂/FeBr₃", "Benzene → Bromobenzene (electrophilic substitution)"],
+ ["Fehling's Solution", "Detects –CHO; PhCHO gives negative; red Cu₂O ppt forms"],
+ ["Grignard Reagent", "Follows acid–base, nucleophilic addition, and nucleophilic substitution"],
+ ["H₂ (Pd/CaCO₃, Lindlar's catalyst)", "Alkyne → cis-alkene"],
+ ["H₃PO₂", "Diazonium salt → benzene (reductive deamination)"],
+ ["HN₃ + H₂SO₄ (Schmidt Reaction)", "RCOOH → RNH₂"],
+ ["H₃PO₄ / Δ", "Behaves like H₂SO₄/Δ for dehydration"],
+ ["H₂SO₄ / Δ", "Alcohol → Alkene; Saytzeff product; carbocation mechanism, rearrangement possible"],
+ ["HNO₂ (NaNO₂ + HCl)", "1° amine → ROH; PhNH₂ → diazonium salt (0–5°C) or phenol (hot)"],
+ ["HIO₄ (Periodic acid)", "Vicinal diol → two carbonyl fragments (oxidative cleavage)"],
+ ["CCl₄ + OH⁻ (Reimer–Tiemann variant)", "Phenol → salicylaldehyde + p-isomer"],
+ ["CO + HCl + AlCl₃ (Gattermann–Koch)", "Benzene → Benzaldehyde"],
+ ["HCN + HCl + AlCl₃ (Gattermann Aldehyde Synthesis)", "Aromatic ring → aromatic aldehyde"],
+ ["CHCl₃ + KOH (Reimer–Tiemann)", "Phenol → o-hydroxybenzaldehyde"],
+ ["RNH₂ + CHCl₃ + KOH (Carbylamine Reaction)", "Detects 1° amine — foul-smelling isocyanide"],
+ ["CO₂ + OH⁻, high T/P (Kolbe's Reaction)", "Sodium phenoxide → salicylic acid"],
+ ["Cu / Δ", "1° ROH → RCHO; 2° ROH → ketone (dehydrogenation)"],
+ ["2,4-DNP", "Detects carbonyl group — orange precipitate"],
+ ["DMSO", "Polar aprotic solvent — favours SN2 mechanism"],
+ ["H₂ (Ni)", "Reduces ketone→2° alcohol, aldehyde→1° alcohol, nitrile→1° amine, alkyne/alkene→alkane"],
+ ["H₂ (Pd/BaSO₄, quinoline — Rosenmund Reduction)", "Acid chloride → Aldehyde"],
+ ["Jones Reagent (CrO₃ + dil. H₂SO₄ + acetone)", "1° ROH → RCHO; 2° ROH → ketone"],
+ ["KHSO₄", "Dehydrating reagent, e.g. glycerol → acrolein"],
+ ["K₂Cr₂O₇ / H⁺", "1° ROH → RCOOH; 2° ROH → ketone"],
+ ["MnO₂", "Oxidises allylic/benzylic –OH selectively to the carbonyl"],
+ ["NaHCO₃", "RCOOH → sodium carboxylate + CO₂ (effervescence test)"],
+ ["NaHSO₃", "Aldehyde/methyl ketone → bisulphite addition compound (separates carbonyl from non-carbonyl)"],
+ ["NaOH(aq)", "R–X → ROH; ester → acid + alcohol (basic hydrolysis); HCHO → Cannizzaro; CH₃CHO/Δ → aldol condensation"],
+ ["Ninhydrin", "Detects amino acids — purple-coloured product"],
+ ["NaOR (strong base)", "Alkyl halide → Saytzeff alkene (E2); ester with α-H → Claisen condensation"],
+ ["NaOH + X₂ (NaOX)", "Methyl ketone → Haloform (CHX₃); amide → Hofmann degradation to amine"],
+ ["NaOH + CaO (soda lime)", "RCOOH → RH (decarboxylation)"],
+ ["MnO / 300°C", "Removes –CO₂ and –H₂O from carboxylic acid"],
+ ["NBS", "Allylic/benzylic bromination"],
+ ["NaNO₂ + HCl", "1° amine → alcohol"],
+ ["NaNH₂ in paraffin", "Non-terminal alkyne → terminal alkyne (isomerisation)"],
+ ["Na / EtOH", "Reduces most groups except C=C and C≡C"],
+ ["Zn(Hg) + HCl (Clemmensen Reduction)", "Ketone → alkane (acidic conditions)"],
+ ["NH₂–NH₂ / OH⁻ (Wolff–Kishner Reduction)", "Ketone → alkane (basic conditions)"],
+ ["Na in liquid NH₃ (Birch Reduction)", "Alkyne → trans-alkene"],
+ ["OsO₄ + H₂O", "Alkene → syn-1,2-diol"],
+ ["O₃, then H₂O/Zn (Ozonolysis)", "Alkene → two carbonyl fragments"],
+ ["Oxirane, then H⁺", "RMgX + epoxide → primary alcohol (2 carbons longer)"],
+ ["PCC (Pyridinium Chlorochromate)", "1° ROH → RCHO only (mild, stops at aldehyde); 3° ROH → no reaction"],
+ ["P(red) + Br₂ (HVZ Reaction)", "Acetic acid → bromoacetic acid; ROH → R–Br"],
+ ["P(red) + HI", "Strong reducing agent — reduces almost any O/halogen compound to alkane"],
+ ["Perbenzoic acid (Baeyer–Villiger Oxidation)", "Ketone → ester (more-substituted group migrates preferentially)"],
+ ["RCl + AlCl₃ (Friedel–Crafts Alkylation)", "Benzene → alkylbenzene"],
+ ["RCOCl + AlCl₃ (Friedel–Crafts Acylation)", "Benzene → aryl ketone"],
+ ["ROH + RCOOH / conc. H₂SO₄ (Fischer Esterification)", "Carboxylic acid → ester"],
+ ["SnCl₂ + HCl", "Azo compound → two amines; nitro → amine; RCN → RCHO (Stephen Reaction)"],
+ ["Sn + HCl", "Nitro → amine; RCN → 1° amine (stronger reduction than SnCl₂)"],
+ ["Silver salt + Br₂/CCl₄ (Hunsdiecker Reaction)", "RCOOAg → R–Br (one carbon shorter) + CO₂"],
+ ["AgOH / moist Ag₂O", "R₄N⁺X⁻ → R₄N⁺OH⁻ (for Hofmann elimination)"],
+ ["SOCl₂", "RCOOH → RCOCl; ROH → RCl (with retention, via SNi)"],
+ ["Tollens' Reagent", "Detects –CHO, terminal alkyne, HCOOH — silver mirror; ketones give negative"],
+ ["Benzenesulphonyl chloride (Hinsberg Reagent)", "Distinguishes and separates 1°, 2°, 3° amines"],
+ ["Tetraethyl Lead (TEL)", "Anti-knock compound in petrol"],
+ ["V₂O₅ / O₂", "Benzene → Maleic anhydride (500°C); Naphthalene → Phthalic anhydride (300°C)"]
+];
+const grid = document.getElementById('reagentGrid');
+reagents.forEach((r,i) => {
+    const div = document.createElement('div');
+    div.className = 'flex items-start gap-2 bg-slate-50 border border-slate-200 rounded-lg p-2.5';
+    div.innerHTML = `<span class="reagent-num mt-0.5">${i+1}</span><div><b class="text-slate-800">${r[0]}</b><div class="text-slate-600">${r[1]}</div></div>`;
+    grid.appendChild(div);
+});
+
+// ---- Simple client-side search across all sections ----
+document.getElementById('searchBox').addEventListener('input', function(e) {
+    const term = e.target.value.trim().toLowerCase();
+    document.querySelectorAll('.searchable').forEach(sec => {
+        if (!term) { sec.style.display = ''; return; }
+        sec.style.display = sec.textContent.toLowerCase().includes(term) ? '' : 'none';
+    });
+});
+</script>
+
+</body>
+</html>
