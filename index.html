@@ -12,10 +12,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Orbitron:wght@700;800;900&family=Rajdhani:wght@500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
-    window.MathJax = { tex: { inlineMath: [['\(', '\)']], displayMath: [['\[', '\]'], ['$$', '$$']] } };
+    window.MathJax = {
+        loader: { load: ['[tex]/mathtools', '[tex]/ams'] },
+        tex: {
+            inlineMath: [['\(', '\)']],
+            displayMath: [['\[', '\]'], ['$$', '$$']],
+            packages: {'[+]': ['mathtools', 'ams']}
+        }
+    };
     </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
         :root {
             --paper: #EEF1EA; --card: #FFFFFF; --ink: #1C2118; --ink-soft: #4B5240;
@@ -56,6 +63,7 @@
            the right vertical offset and holds just the visible rows. */
         #listViewport { overflow-y: auto; position: relative; flex: 1; }
         #listSpacer { position: relative; width: 100%; }
+        #listInner  { will-change: transform; }
         #listInner { position: absolute; top: 0; left: 0; width: 100%; will-change: transform; }
 
         .vrow { height: var(--row-h); display: flex; align-items: center; cursor: pointer; }
@@ -78,6 +86,60 @@
         #splitShell { flex: 1; display: flex; min-height: 0; max-width: 1500px; margin: 0 auto; width: 100%; }
         #listPane { width: 400px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--line); background: var(--card); }
         #detailPane { flex: 1; overflow-y: auto; min-width: 0; }
+        #rxnNavBar {
+            position: sticky; top: 0; z-index: 9;
+            display: flex; align-items: center; gap: .5rem;
+            padding: .55rem .9rem; background: var(--card);
+            border-bottom: 1px solid var(--line);
+        }
+        #rxnNavBar.hidden { display: none; }
+        .nav-btn {
+            display: inline-flex; align-items: center; gap: .35rem;
+            padding: .35rem .75rem; border-radius: .5rem; font-size: .75rem;
+            font-weight: 700; cursor: pointer; border: 1px solid var(--line);
+            background: var(--paper); color: var(--ink); transition: all .15s;
+            user-select: none; -webkit-user-select: none;
+        }
+        .nav-btn:hover:not(:disabled) { background: var(--teal); color: #fff; border-color: var(--teal); }
+        .nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+        #rxnNavCounter { flex: 1; text-align: center; font-size: .72rem; color: var(--ink-soft); font-weight: 600; }
+        body.theme-gaming #rxnNavBar { background: var(--card); border-bottom: 1px solid rgba(59,130,246,0.2); }
+        body.theme-gaming .nav-btn { background: #03040e; border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+        body.theme-gaming .nav-btn:hover:not(:disabled) { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+        body.theme-gaming #rxnNavCounter { color: rgba(96,165,250,.5); }
+
+        /* Landscape preview modal */
+        #lsModal {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,.6); backdrop-filter: blur(3px);
+        }
+        #lsModal.open { display: flex; flex-direction: column; }
+        #lsModalBar {
+            display: flex; align-items: center; gap: .75rem; flex-shrink: 0;
+            padding: .7rem 1rem; background: #144A3D; color: #fff;
+        }
+        #lsModalBar h3 { flex: 1; font-weight: 700; font-size: .9rem; margin: 0; }
+        #lsModalBody { flex: 1; overflow: auto; background: #fff; padding: 1rem 1.5rem; }
+        .ls-print-btn {
+            display: inline-flex; align-items: center; gap: .4rem;
+            padding: .4rem .9rem; border-radius: .4rem; font-size: .8rem;
+            font-weight: 700; cursor: pointer; border: none;
+            background: #fbbf24; color: #1a1000; transition: background .15s;
+        }
+        .ls-print-btn:hover { background: #f59e0b; }
+        .ls-close-btn {
+            display: inline-flex; align-items: center; gap: .3rem;
+            padding: .4rem .8rem; border-radius: .4rem; font-size: .8rem;
+            font-weight: 700; cursor: pointer; border: 1px solid rgba(255,255,255,.3);
+            background: transparent; color: #fff; transition: background .15s;
+        }
+        .ls-close-btn:hover { background: rgba(255,255,255,.15); }
+        body.theme-gaming #lsModalBar { background: #07091a; border-bottom: 1px solid rgba(59,130,246,0.4); }
+        body.theme-gaming #lsModalBody { background: #03040e; color: var(--ink); }
+        body.theme-gaming #lsModalBody .print-tbl tbody tr:nth-child(even) { background: rgba(59,130,246,0.04); }
+        body.theme-gaming #lsModalBody .print-tbl td,
+        body.theme-gaming #lsModalBody .print-tbl th { border-color: rgba(59,130,246,0.15); }
+        body.theme-gaming #lsModalBody .print-tbl thead tr { background: #0d1333; }
         #detailInner { max-width: 760px; margin: 0 auto; padding: 1.75rem; }
         .detail-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--ink-soft); text-align: center; padding: 2rem; }
 
@@ -125,90 +187,693 @@
         @keyframes pulseDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
         #searchInput:focus { outline: 2px solid var(--teal); }
 
-        /* ================= GAMING MODE =================
-           A full re-skin: dark radial-glow arcade/dungeon palette, Orbitron
-           display type, Rajdhani labels, glowing borders. Toggled by adding
-           .theme-gaming to <body> — every existing rule already reads from
-           the CSS custom properties below, so overriding them at body level
-           re-themes the whole page without touching layout rules. */
+        /* ==========================================================
+           SOLO LEVELING — SYSTEM INTERFACE
+           Inspired by the System windows in the manhwa/anime:
+           void-black background, electric-blue glowing panels,
+           angular bracket corners, purple mana accents, gold S-rank
+           highlights, Orbitron display font, scanline texture.
+           Toggled by .theme-gaming on <body>.
+           ========================================================== */
+
+        /* ── Core palette ── */
         body.theme-gaming {
-            --paper: #0a0710; --card: #130b1a; --ink: #f3ecff; --ink-soft: #9a83b0;
-            --line: #3a2452; --teal: #ff6a00; --teal-dark: #c94f00;
-            --amber: #ffcf3d; --hazard: #ff1a5e;
-            background: radial-gradient(ellipse 900px 600px at 50% -10%, #2a0f3a 0%, #0a0710 60%) fixed;
+            --paper:      #03040e;
+            --card:       #07091a;
+            --card2:      #0b0d24;
+            --ink:        #cdd8ff;
+            --ink-soft:   #5a6a9a;
+            --line:       rgba(59,130,246,0.25);
+            --teal:       #3b82f6;
+            --teal-dark:  #1d4ed8;
+            --teal-glow:  rgba(59,130,246,0.45);
+            --amber:      #fbbf24;
+            --hazard:     #a855f7;
+            --sl-gold:    #f59e0b;
+            --sl-purple:  #7c3aed;
+            --sl-cyan:    #06b6d4;
+            font-family: 'Roboto', ui-sans-serif, sans-serif;
+            background-color: #03040e;
         }
-        body.theme-gaming .font-display { font-family: 'Orbitron', ui-sans-serif, sans-serif; letter-spacing: 1.5px; }
-        body.theme-gaming { font-family: 'Roboto', ui-sans-serif, sans-serif; }
-        body.theme-gaming .font-mono-eq { font-family: 'Rajdhani', ui-monospace, monospace; font-weight: 600; letter-spacing: 0.5px; }
+
+        /* ── Scanline texture — baked into body background, not fixed overlay ── */
+        /* Using background-image so it tiles with the content (no repaint on scroll) */
+        body.theme-gaming {
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0,0,0,0.12) 3px,
+                    rgba(0,0,0,0.12) 4px
+                ),
+                radial-gradient(ellipse 1200px 600px at 50% -5%,  rgba(59,130,246,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse 700px 400px  at 85% 60%,  rgba(124,58,237,0.07) 0%, transparent 60%);
+        }
+
+        /* ── Typography ── */
+        body.theme-gaming .font-display {
+            font-family: 'Orbitron', ui-sans-serif, sans-serif;
+            letter-spacing: 2px; text-transform: uppercase;
+        }
+        body.theme-gaming .font-mono-eq {
+            font-family: 'IBM Plex Mono', ui-monospace, monospace;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Header — System Notification panel ── */
         body.theme-gaming .gradient-header {
-            background: radial-gradient(ellipse 700px 300px at 30% 0%, #3a0620 0%, #0a0710 70%), linear-gradient(135deg, #0a0710 0%, #1a0a24 100%);
-            border-bottom: 1px solid var(--border, #3a2452);
+            background:
+                linear-gradient(180deg, rgba(59,130,246,0.08) 0%, rgba(3,4,14,0.98) 100%),
+                #03040e;
+            border-bottom: 1px solid rgba(59,130,246,0.4);
+            box-shadow: 0 0 40px -10px rgba(59,130,246,0.35), inset 0 -1px 0 rgba(59,130,246,0.2);
+            position: relative;
+        }
+        body.theme-gaming .gradient-header::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent 0%, #3b82f6 30%, #7c3aed 70%, transparent 100%);
         }
         body.theme-gaming .gradient-header h1 {
-            background: linear-gradient(90deg, #ff6a00, #ff3d7d 55%, #c77dff);
+            background: linear-gradient(90deg, #60a5fa 0%, #a78bfa 55%, #67e8f9 100%);
             -webkit-background-clip: text; background-clip: text; color: transparent;
-            text-shadow: none;
+            text-shadow: none; filter: drop-shadow(0 0 12px rgba(96,165,250,0.5));
+        }
+        body.theme-gaming .gradient-header p { color: rgba(96,165,250,0.6); }
+        body.theme-gaming #totalReactionCount { color: #60a5fa !important; }
+        body.theme-gaming #revisionCounter    { color: rgba(167,139,250,0.8); }
+
+        /* ── Search/Filter bar — STATUS WINDOW ── */
+        body.theme-gaming #searchBarWrap {
+            background: #07091a;
+            border-bottom: 1px solid rgba(59,130,246,0.3);
+            box-shadow: 0 4px 24px -4px rgba(59,130,246,0.1);
         }
         body.theme-gaming #searchInput,
         body.theme-gaming #tagFilter,
         body.theme-gaming #levelFilter {
-            background: var(--card); color: var(--ink); border-color: var(--line);
+            background: #03040e;
+            color: #cdd8ff;
+            border: 1px solid rgba(59,130,246,0.35);
+            box-shadow: 0 0 0 0 transparent;
+            transition: border-color .2s, box-shadow .2s;
         }
-        body.theme-gaming .bg-white { background: var(--card) !important; }
-        body.theme-gaming .vrow-reaction:hover { background: #1d1128; }
-        body.theme-gaming .vrow-reaction.selected {
-            background: #1d1128; box-shadow: inset 3px 0 0 var(--teal), 0 0 14px -4px var(--teal);
+        body.theme-gaming #searchInput:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.25), 0 0 14px rgba(59,130,246,0.2) !important;
+            outline: none;
         }
-        body.theme-gaming .vrow-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.3px; }
-        body.theme-gaming #detailPane, body.theme-gaming #listPane { background: var(--card); }
-        body.theme-gaming .bg-amber-50\/60 { background: rgba(255, 106, 0, 0.08) !important; border-color: rgba(255, 106, 0, 0.35) !important; }
-        body.theme-gaming .bg-blue-50\/50 { background: rgba(34, 211, 238, 0.06) !important; border-color: rgba(34, 211, 238, 0.3) !important; }
-        body.theme-gaming .text-amber-900, body.theme-gaming .text-amber-950, body.theme-gaming .text-amber-800 { color: var(--gold-bright, #ffcf3d) !important; }
-        body.theme-gaming .text-blue-900, body.theme-gaming .text-blue-950 { color: var(--phys, #22d3ee) !important; }
-        body.theme-gaming .bg-slate-900 {
-            background: #0d0714 !important; border: 1px solid rgba(255, 106, 0, 0.25);
-            box-shadow: 0 0 20px -8px rgba(255, 106, 0, 0.35);
+        body.theme-gaming #tagFilter:focus, body.theme-gaming #levelFilter:focus {
+            border-color: #7c3aed;
+            outline: none;
         }
-        body.theme-gaming .chip { font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.4px; }
+        body.theme-gaming #resultCountDisplay { color: rgba(96,165,250,0.55); }
+        body.theme-gaming .fa-magnifying-glass { color: #3b82f6 !important; }
+        body.theme-gaming #resetBtn { color: #60a5fa; }
 
-        /* Signature element: glowing gradient divider under the search bar,
-           animated like a HUD scanline sweeping gold -> pink -> violet. */
+        /* ── List pane — QUEST LOG ── */
+        body.theme-gaming .bg-white { background: var(--card) !important; }
+        body.theme-gaming #listPane  { background: #07091a; border-right: 1px solid rgba(59,130,246,0.18); }
+        body.theme-gaming #detailPane { background: #03040e; }
+
+        body.theme-gaming .vrow-header {
+            background: linear-gradient(90deg, rgba(59,130,246,0.12), rgba(7,9,26,0));
+            color: #60a5fa;
+            font-family: 'Orbitron', sans-serif;
+            font-size: .62rem;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            border-left: 2px solid #3b82f6;
+        }
+        body.theme-gaming .vrow-reaction {
+            transition: background .12s;
+        }
+        body.theme-gaming .vrow-reaction:hover {
+            background: rgba(59,130,246,0.06);
+        }
+        body.theme-gaming .vrow-reaction.selected {
+            background: rgba(59,130,246,0.1);
+            box-shadow: inset 3px 0 0 #3b82f6, 0 0 20px -6px rgba(59,130,246,0.4);
+        }
+        body.theme-gaming .vrow-reaction.selected .vrow-name { color: #93c5fd; }
+        body.theme-gaming .vrow-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: .7rem; font-weight: 700; letter-spacing: .04em;
+            color: #cdd8ff;
+        }
+        body.theme-gaming .vrow-dot { color: rgba(59,130,246,0.5); }
+
+        /* ── Chip badges — RANK TAGS ── */
+        body.theme-gaming .chip {
+            font-family: 'Orbitron', sans-serif;
+            font-size: .58rem; font-weight: 700; letter-spacing: .08em;
+        }
+        body.theme-gaming .chip[data-tag="PREP"]  { background: rgba(124,58,237,0.2); color: #c4b5fd; border-color: rgba(124,58,237,0.5); }
+        body.theme-gaming .chip[data-tag="RXN"]   { background: rgba(59,130,246,0.18); color: #93c5fd; border-color: rgba(59,130,246,0.45); }
+        body.theme-gaming .chip[data-tag="TEST"]  { background: rgba(245,158,11,0.15); color: #fcd34d; border-color: rgba(245,158,11,0.4); }
+        body.theme-gaming .chip { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.35); }
+
+        /* ── Detail pane — SKILL INFORMATION WINDOW ── */
+        body.theme-gaming #detailInner { position: relative; }
+        body.theme-gaming .detail-placeholder { color: rgba(96,165,250,0.3); }
+        body.theme-gaming .detail-placeholder i { color: rgba(59,130,246,0.2) !important; }
+
+        /* Equation block: holographic display */
+        body.theme-gaming .bg-slate-900 {
+            background: linear-gradient(135deg, rgba(7,9,26,0.98) 0%, rgba(11,13,36,0.95) 100%) !important;
+            border: 1px solid rgba(59,130,246,0.4) !important;
+            box-shadow:
+                0 0 0 1px rgba(59,130,246,0.15),
+                0 0 30px -8px rgba(59,130,246,0.4),
+                inset 0 1px 0 rgba(96,165,250,0.1) !important;
+            position: relative;
+            border-radius: .75rem !important;
+        }
+        /* Corner bracket decorations on the equation box */
+        body.theme-gaming .bg-slate-900::before,
+        body.theme-gaming .bg-slate-900::after {
+            content: '';
+            position: absolute;
+            width: 12px; height: 12px;
+            border-color: #3b82f6;
+            border-style: solid;
+        }
+        body.theme-gaming .bg-slate-900::before {
+            top: -1px; left: -1px;
+            border-width: 2px 0 0 2px;
+            border-radius: 3px 0 0 0;
+        }
+        body.theme-gaming .bg-slate-900::after {
+            bottom: -1px; right: -1px;
+            border-width: 0 2px 2px 0;
+            border-radius: 0 0 3px 0;
+        }
+
+        /* Memory trick block */
+        /* Memory trick block — subtle blue-purple panel, NOT solid colour */
+        body.theme-gaming .bg-amber-50\/60 {
+            background: linear-gradient(135deg, rgba(59,130,246,0.07) 0%, rgba(124,58,237,0.07) 100%) !important;
+            border: 1px solid rgba(124,58,237,0.28) !important;
+            box-shadow: 0 0 18px -8px rgba(124,58,237,0.25), inset 0 0 12px rgba(59,130,246,0.04);
+        }
+        body.theme-gaming .text-amber-900,
+        body.theme-gaming .text-amber-950 { color: #c4b5fd !important; }
+        body.theme-gaming .text-amber-800  { color: #a78bfa !important; }
+        body.theme-gaming .text-amber-600  { color: #818cf8 !important; }
+
+        /* JEE notes / key block */
+        body.theme-gaming .bg-blue-50\/50 {
+            background: rgba(59,130,246,0.05) !important;
+            border-color: rgba(59,130,246,0.3) !important;
+            box-shadow: 0 0 16px -6px rgba(59,130,246,0.15);
+        }
+        body.theme-gaming .text-blue-900,
+        body.theme-gaming .text-blue-950  { color: #93c5fd !important; }
+        body.theme-gaming .text-blue-800  { color: #60a5fa !important; }
+
+        /* JEE Advanced badge — only target bg-amber-500 exactly, not bg-amber-50 */
+        body.theme-gaming .bg-amber-500 { background: #7c3aed !important; }
+        body.theme-gaming .text-white { color: #f0f0ff; }
+
+        /* Read Aloud button */
+        body.theme-gaming .audio-btn {
+            background: rgba(59,130,246,0.1) !important;
+            border-color: rgba(59,130,246,0.35) !important;
+            color: #93c5fd !important;
+        }
+        body.theme-gaming .audio-btn:hover {
+            background: rgba(59,130,246,0.2) !important;
+            box-shadow: 0 0 12px rgba(59,130,246,0.3);
+        }
+        body.theme-gaming .audio-btn.speaking { box-shadow: 0 0 16px rgba(59,130,246,0.5); }
+
+        /* Reaction meta — intermediate, repeats */
+        body.theme-gaming .text-indigo-500  { color: #a78bfa !important; }
+        body.theme-gaming .text-slate-500   { color: #5a6a9a !important; }
+        body.theme-gaming .text-slate-600   { color: #7a8aba !important; }
+        body.theme-gaming .text-teal-600,
+        body.theme-gaming .text-teal-700    { color: #06b6d4 !important; }
+        body.theme-gaming .text-emerald-600 { color: #22d3ee !important; }
+
+        /* ── Divider — blue energy wave (GPU composited translateX) ── */
         body.theme-gaming .gaming-divider {
             display: block; height: 2px; width: 100%;
-            background: linear-gradient(90deg, transparent, #ff6a00, #ff3d7d, #c77dff, transparent);
-            background-size: 200% 100%;
-            animation: dividerSweep 3.5s linear infinite;
-            opacity: 0.8;
+            background: #03040e;
+            overflow: hidden; position: relative;
         }
-        @keyframes dividerSweep { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        body.theme-gaming .gaming-divider::after {
+            content: '';
+            position: absolute; top: 0; left: -100%; width: 300%; height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                #1d4ed8 25%,
+                #3b82f6 40%,
+                #7c3aed 55%,
+                #06b6d4 70%,
+                transparent 100%
+            );
+            animation: slDivider 4s ease-in-out infinite;
+            will-change: transform;
+        }
+        @keyframes slDivider {
+            0%   { transform: translateX(0%);   opacity: .6; }
+            50%  { transform: translateX(33%);  opacity: 1; }
+            100% { transform: translateX(66%);  opacity: .6; }
+        }
         @media (prefers-reduced-motion: reduce) {
-            body.theme-gaming .gaming-divider { animation: none; }
+            body.theme-gaming .gaming-divider::after { animation: none; }
         }
 
-        /* Look toggle button */
+        /* ── System toggle button ── */
         #lookToggle {
             font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.3px;
         }
         body.theme-gaming #lookToggle {
-            background: linear-gradient(90deg, rgba(255,106,0,0.18), rgba(255,61,125,0.18));
-            border-color: #ff6a00; color: #ffcf3d;
+            background: rgba(59,130,246,0.12);
+            border: 1px solid rgba(59,130,246,0.5);
+            color: #93c5fd;
+            font-family: 'Orbitron', sans-serif;
+            font-size: .7rem; letter-spacing: .1em;
+            box-shadow: 0 0 16px -4px rgba(59,130,246,0.4);
         }
+        body.theme-gaming #lookToggle i { color: #60a5fa !important; }
+        body.theme-gaming #lookToggle:hover {
+            background: rgba(59,130,246,0.22);
+            box-shadow: 0 0 24px -4px rgba(59,130,246,0.55);
+        }
+
+        /* ── Export / Quick Notes / Intermediates buttons ── */
+        body.theme-gaming .gradient-header button:not(#lookToggle),
+        body.theme-gaming .gradient-header a {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(96,165,250,0.2);
+            color: #a0b4e0;
+        }
+        body.theme-gaming .gradient-header button:not(#lookToggle):hover,
+        body.theme-gaming .gradient-header a:hover {
+            background: rgba(59,130,246,0.1);
+            border-color: rgba(59,130,246,0.4);
+            color: #cdd8ff;
+        }
+
+        /* ── Mobile back bar ── */
+        body.theme-gaming #mobileBackBar {
+            background: #07091a;
+            border-bottom: 1px solid rgba(59,130,246,0.25);
+        }
+        body.theme-gaming #mobileBackBar button { color: #60a5fa; }
+
+        /* ── Intermediates modal — SYSTEM STATUS WINDOW ── */
+        body.theme-gaming #intModal { background: rgba(1,2,10,0.75); }
+        body.theme-gaming #intModalBox {
+            background: #07091a;
+            border: 1px solid rgba(59,130,246,0.45);
+            box-shadow:
+                0 0 0 1px rgba(59,130,246,0.1),
+                0 0 60px -15px rgba(59,130,246,0.5),
+                0 32px 80px rgba(0,0,0,0.8);
+        }
+        body.theme-gaming #intModalHeader {
+            background:
+                linear-gradient(180deg, rgba(59,130,246,0.1) 0%, rgba(7,9,26,0.98) 100%),
+                #07091a;
+            border-bottom: 1px solid rgba(59,130,246,0.4);
+        }
+        body.theme-gaming #intModalHeader h2 {
+            background: linear-gradient(90deg, #60a5fa, #a78bfa);
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+            font-family: 'Orbitron', sans-serif; letter-spacing: .1em;
+        }
+        body.theme-gaming #intTabBar {
+            background: #03040e;
+            border-bottom: 1px solid rgba(59,130,246,0.2);
+        }
+        body.theme-gaming .int-tab { color: rgba(96,165,250,0.45); }
+        body.theme-gaming .int-tab:hover { background: rgba(59,130,246,0.08); color: #93c5fd; }
+        body.theme-gaming .int-tab.active {
+            color: #60a5fa;
+            border-bottom-color: #3b82f6;
+            background: rgba(59,130,246,0.06);
+            font-family: 'Orbitron', sans-serif; font-size: .65rem;
+        }
+        body.theme-gaming .int-panel { background: #07091a; }
+        body.theme-gaming .int-section-title { color: #93c5fd; font-family: 'Orbitron', sans-serif; font-size: .75rem; letter-spacing: .08em; }
+        body.theme-gaming .int-fact {
+            background: #03040e;
+            border: 1px solid rgba(59,130,246,0.2);
+            box-shadow: inset 0 0 20px rgba(59,130,246,0.03);
+        }
+        body.theme-gaming .int-fact-title { color: #60a5fa; }
+        body.theme-gaming .int-eq {
+            background: #02030c;
+            border: 1px solid rgba(59,130,246,0.3);
+            color: #93c5fd;
+            box-shadow: 0 0 20px -6px rgba(59,130,246,0.25), inset 0 0 12px rgba(59,130,246,0.05);
+        }
+        body.theme-gaming .int-rule { border-top-color: rgba(59,130,246,0.2); }
+        body.theme-gaming .stab-ladder {
+            background: #03040e;
+            border-color: rgba(59,130,246,0.2);
+        }
+        body.theme-gaming .stab-bar { background: #3b82f6; box-shadow: 0 0 10px -2px rgba(59,130,246,0.6); }
+        body.theme-gaming .stab-label { color: #cdd8ff; }
+        body.theme-gaming .stab-sub { color: rgba(96,165,250,0.55); }
+        body.theme-gaming .stab-arrow { color: #3b82f6; }
+        body.theme-gaming .int-badge-teal   { background: rgba(59,130,246,0.12); color: #93c5fd; border-color: rgba(59,130,246,0.35); }
+        body.theme-gaming .int-badge-amber  { background: rgba(245,158,11,0.12); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+        body.theme-gaming .int-badge-purple { background: rgba(124,58,237,0.12); color: #c4b5fd; border-color: rgba(124,58,237,0.3); }
+
+        /* ── S-RANK glow on selected rows — opacity-only pulse (GPU composited) ── */
+        body.theme-gaming .vrow-reaction.selected {
+            box-shadow: inset 3px 0 0 #3b82f6;
+            position: relative;
+        }
+        body.theme-gaming .vrow-reaction.selected::after {
+            content: '';
+            position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(90deg, rgba(59,130,246,0.18) 0%, transparent 60%);
+            animation: slRankPulse 2.5s ease-in-out infinite;
+            will-change: opacity;
+        }
+        @keyframes slRankPulse {
+            0%, 100% { opacity: 0.5; }
+            50%       { opacity: 1; }
+        }
+
+        /* ── Notification flash when opening System ── */
+        @keyframes slNotify {
+            0%   { opacity: 0; transform: translateY(-8px) scale(.97); }
+            100% { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+        body.theme-gaming #intModal.open #intModalBox {
+            animation: slNotify .22s cubic-bezier(.2,.85,.4,1) both;
+        }
+
+
+        /* ================= INTERMEDIATES MODAL ================= */
+        #intModal {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.55); backdrop-filter: blur(4px);
+            align-items: flex-start; justify-content: center; padding: 1.5rem;
+            overflow-y: auto;
+        }
+        #intModal.open { display: flex; }
+        #intModalBox {
+            background: var(--card); border-radius: 1.25rem; width: 100%;
+            max-width: 920px; box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+            overflow: hidden; margin: auto;
+        }
+        #intModalHeader {
+            background: linear-gradient(135deg,#14180F 0%,#1F3B33 45%,#1F6F5C 100%);
+            padding: 1.25rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+        }
+        #intTabBar {
+            display: flex; overflow-x: auto; border-bottom: 2px solid var(--line);
+            background: var(--paper); gap: 0; scrollbar-width: none;
+        }
+        #intTabBar::-webkit-scrollbar { display: none; }
+        .int-tab {
+            padding: .6rem 1.1rem; font-size: .78rem; font-weight: 700;
+            cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent;
+            margin-bottom: -2px; transition: all .15s; color: var(--ink-soft);
+            display: flex; align-items: center; gap: .4rem;
+        }
+        .int-tab:hover { color: var(--ink); background: var(--line); }
+        .int-tab.active { color: var(--teal-dark); border-bottom-color: var(--teal); background: var(--card); }
+        .int-panel { display: none; padding: 1.4rem 1.5rem 1.8rem; }
+        .int-panel.active { display: block; }
+        .stab-ladder {
+            display: flex; align-items: flex-end; gap: .5rem;
+            padding: 1rem; background: var(--paper); border-radius: .75rem;
+            border: 1px solid var(--line); margin: .9rem 0; overflow-x: auto;
+        }
+        .stab-rung {
+            display: flex; flex-direction: column; align-items: center;
+            gap: .35rem; flex: 1; min-width: 80px;
+        }
+        .stab-bar {
+            width: 100%; border-radius: .4rem .4rem 0 0;
+            background: var(--teal); opacity: .85;
+        }
+        .stab-label { font-size: .68rem; font-weight: 700; text-align: center; color: var(--ink); line-height: 1.25; }
+        .stab-sub   { font-size: .6rem; color: var(--ink-soft); text-align: center; margin-top: .1rem; }
+        .int-fact-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(250px,1fr)); gap: .75rem; margin-top: .9rem; }
+        .int-fact {
+            background: var(--paper); border: 1px solid var(--line);
+            border-radius: .65rem; padding: .8rem 1rem;
+        }
+        .int-fact-title { font-weight: 800; font-size: .72rem; text-transform: uppercase;
+            letter-spacing: .05em; color: var(--teal-dark); margin-bottom: .35rem; }
+        .int-fact p { font-size: .78rem; line-height: 1.5; color: var(--ink); margin: 0; }
+        .int-eq {
+            background: #0f172a; color: #fbbf24; font-family: 'IBM Plex Mono',monospace;
+            font-size: .78rem; padding: .55rem .9rem; border-radius: .5rem;
+            margin: .4rem 0; overflow-x: auto;
+        }
+        .int-badge {
+            display: inline-flex; align-items: center; gap: .3rem;
+            font-size: .68rem; font-weight: 700; padding: .15rem .55rem;
+            border-radius: 9999px; margin: .15rem;
+        }
+        .int-badge-teal   { background:#dcfce7; color:#15803d; border:1px solid #86efac; }
+        .int-badge-red    { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+        .int-badge-amber  { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+        .int-badge-purple { background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; }
+        .int-badge-blue   { background:#dbeafe; color:#1e40af; border:1px solid #93c5fd; }
+        .int-badge-pink   { background:#fce7f3; color:#9d174d; border:1px solid #f9a8d4; }
+        .stab-arrow {
+            font-size:1.3rem; color:var(--teal); font-weight:900;
+            align-self:center; flex-shrink:0;
+        }
+        .int-section-title {
+            font-family:'Fraunces',serif; font-size:1.05rem; font-weight:700;
+            color:var(--ink); margin: .9rem 0 .4rem; display:flex; align-items:center; gap:.5rem;
+        }
+        .int-rule {
+            border: none; border-top: 1px solid var(--line); margin: 1rem 0;
+        }
+        body.theme-gaming #intModalHeader {
+            background: radial-gradient(ellipse 600px 200px at 30% 0%,#3a0620 0%,#0a0710 70%);
+            border-bottom: 1px solid #3a2452;
+        }
+        body.theme-gaming #intModalBox { border: 1px solid #3a2452; }
+        body.theme-gaming .int-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+        body.theme-gaming .stab-bar { background: var(--teal); }
+        body.theme-gaming .int-eq { background: #0a0710; border: 1px solid #3a2452; }
+        body.theme-gaming .int-fact { border-color: #3a2452; }
+        @media (max-width:600px) {
+            #intModal { padding: .5rem; }
+            .int-panel { padding: 1rem 1rem 1.4rem; }
+            #intModalHeader { padding: 1rem; }
+        }
+
+
+        /* ========================================================
+           QUIZ MODE
+           ======================================================== */
+        #quizModal {
+            display: none; position: fixed; inset: 0; z-index: 10001;
+            background: rgba(0,0,0,.65); backdrop-filter: blur(4px);
+            align-items: flex-start; justify-content: center;
+            padding: 1rem; overflow-y: auto;
+        }
+        #quizModal.open { display: flex; }
+        #quizBox {
+            background: var(--card); border-radius: 1.25rem; width: 100%;
+            max-width: 760px; margin: auto; overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0,0,0,.4);
+        }
+        #quizHeader {
+            background: linear-gradient(135deg,#14180F 0%,#1F3B33 45%,#1F6F5C 100%);
+            padding: 1rem 1.25rem; display: flex; align-items: center; gap: .75rem;
+        }
+        #quizHeader h2 { flex:1; color:#fff; font-weight:700; font-size:.95rem; margin:0; }
+        #quizProgressBar {
+            height: 5px; background: rgba(255,255,255,.15);
+            border-radius: 0;
+        }
+        #quizProgressFill {
+            height: 100%; background: linear-gradient(90deg,#10b981,#34d399);
+            border-radius: 0; transition: width .4s ease;
+        }
+        #quizBody { padding: 1.25rem 1.4rem 1.5rem; }
+
+        /* Question card */
+        .quiz-chapter-tag {
+            font-size: .65rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .08em; color: var(--ink-soft); margin-bottom: .4rem;
+        }
+        .quiz-q-num {
+            font-size: .72rem; font-weight: 700; color: var(--ink-soft); margin-bottom: .15rem;
+        }
+        .quiz-rxn-name {
+            font-family: 'Fraunces',serif; font-size: 1.05rem; font-weight: 700;
+            color: var(--ink); margin-bottom: .9rem; line-height: 1.3;
+        }
+        .quiz-equation-box {
+            background: #0f172a; border-radius: .65rem; padding: .85rem 1rem;
+            margin-bottom: 1rem; font-family: 'IBM Plex Mono',monospace; font-size: .8rem;
+            color: #e2e8f0; display: flex; align-items: center; gap: .5rem;
+            flex-wrap: wrap; line-height: 1.6;
+        }
+        .quiz-eq-part { color: #fbbf24; }
+        .quiz-eq-arrow { color: #34d399; font-size: 1.1rem; flex-shrink: 0; }
+        .quiz-eq-blank {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: rgba(59,130,246,.18); border: 2px dashed rgba(59,130,246,.5);
+            border-radius: .4rem; padding: .2rem .9rem; color: #60a5fa;
+            font-size: .75rem; font-weight: 700; letter-spacing: .04em; flex-shrink: 0;
+        }
+        .quiz-ask {
+            font-size: .82rem; color: var(--ink-soft); margin-bottom: .75rem; font-weight: 600;
+        }
+
+        /* Options */
+        .quiz-options { display: grid; gap: .6rem; }
+        .quiz-opt {
+            padding: .7rem 1rem; border-radius: .65rem; border: 1.5px solid var(--line);
+            background: var(--paper); color: var(--ink); font-size: .82rem;
+            cursor: pointer; text-align: left; font-family: 'IBM Plex Mono',monospace;
+            transition: border-color .15s, background .15s; font-weight: 500;
+            display: flex; align-items: center; gap: .65rem;
+        }
+        .quiz-opt:hover:not(:disabled) {
+            border-color: var(--teal); background: rgba(20,74,61,.08);
+        }
+        .quiz-opt .opt-letter {
+            width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+            border: 1.5px solid var(--line); display: flex; align-items: center;
+            justify-content: center; font-size: .65rem; font-weight: 700;
+            font-family: 'Inter',sans-serif; background: var(--card);
+        }
+        .quiz-opt.correct {
+            border-color: #10b981 !important; background: rgba(16,185,129,.1) !important;
+            color: #065f46;
+        }
+        .quiz-opt.correct .opt-letter { background: #10b981; color: #fff; border-color: #10b981; }
+        .quiz-opt.wrong {
+            border-color: #ef4444 !important; background: rgba(239,68,68,.08) !important;
+            color: #7f1d1d;
+        }
+        .quiz-opt.wrong .opt-letter { background: #ef4444; color: #fff; border-color: #ef4444; }
+        .quiz-opt:disabled { cursor: not-allowed; opacity: .75; }
+
+        /* Feedback */
+        #quizFeedback {
+            margin-top: .85rem; padding: .7rem .9rem; border-radius: .55rem;
+            font-size: .8rem; display: none; line-height: 1.5;
+        }
+        #quizFeedback.correct { background: rgba(16,185,129,.1); border: 1px solid #10b981; color: #065f46; }
+        #quizFeedback.wrong   { background: rgba(239,68,68,.08);  border: 1px solid #ef4444; color: #7f1d1d; }
+        body.theme-gaming #quizFeedback.correct { color: #6ee7b7; }
+        body.theme-gaming #quizFeedback.wrong   { color: #fca5a5; }
+
+        /* Footer */
+        #quizFooter {
+            display: flex; align-items: center; gap: .75rem;
+            margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--line);
+        }
+        #quizScoreDisplay { flex:1; font-size: .78rem; font-weight: 700; color: var(--ink-soft); }
+        .quiz-nav-btn {
+            padding: .5rem 1.1rem; border-radius: .5rem; font-size: .82rem;
+            font-weight: 700; cursor: pointer; border: none; transition: all .15s;
+        }
+        #quizNextBtn { background: var(--teal); color: #fff; display: none; }
+        #quizNextBtn:hover { background: var(--teal-dark); }
+        #quizRestartBtn { background: var(--line); color: var(--ink); }
+        #quizRestartBtn:hover { opacity: .8; }
+
+        /* Results screen */
+        #quizResults { display: none; padding: 1.5rem; text-align: center; }
+        #quizResults.show { display: block; }
+        .quiz-rank-badge {
+            font-family: 'Orbitron',sans-serif; font-size: 2.8rem; font-weight: 900;
+            letter-spacing: .1em; margin: .5rem 0;
+        }
+        .quiz-rank-E { color: #94a3b8; }
+        .quiz-rank-D { color: #78716c; }
+        .quiz-rank-C { color: #65a30d; }
+        .quiz-rank-B { color: #0284c7; }
+        .quiz-rank-A { color: #7c3aed; }
+        .quiz-rank-S { color: #f59e0b; text-shadow: 0 0 20px rgba(245,158,11,.5); }
+        .quiz-rank-SS { color: #ef4444; text-shadow: 0 0 24px rgba(239,68,68,.6); animation: ssGlow 1.5s ease-in-out infinite; }
+        @keyframes ssGlow { 0%,100%{text-shadow:0 0 24px rgba(239,68,68,.4);} 50%{text-shadow:0 0 40px rgba(239,68,68,.9);} }
+        .quiz-score-big { font-size: 2rem; font-weight: 800; color: var(--ink); margin: .3rem 0; }
+        .quiz-breakdown { margin-top: 1rem; display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+        .quiz-bd-item {
+            background: var(--paper); border: 1px solid var(--line); border-radius: .65rem;
+            padding: .6rem 1rem; font-size: .78rem; font-weight: 700; min-width: 80px;
+        }
+        .quiz-bd-item span { display: block; font-size: 1.2rem; font-weight: 900; margin-top: .1rem; }
+        .quiz-bd-correct span { color: #10b981; }
+        .quiz-bd-wrong   span { color: #ef4444; }
+        .quiz-bd-skip    span { color: #f59e0b; }
+
+        /* Gaming mode overrides */
+        body.theme-gaming #quizBox {
+            border: 1px solid rgba(59,130,246,.45);
+            box-shadow: 0 0 60px -15px rgba(59,130,246,.5), 0 32px 80px rgba(0,0,0,.8);
+        }
+        body.theme-gaming #quizHeader {
+            background: linear-gradient(180deg,rgba(59,130,246,.1) 0%,rgba(7,9,26,.98) 100%),#07091a;
+            border-bottom: 1px solid rgba(59,130,246,.4);
+        }
+        body.theme-gaming #quizProgressFill { background: linear-gradient(90deg,#3b82f6,#7c3aed); }
+        body.theme-gaming .quiz-equation-box {
+            background: #02030c; border: 1px solid rgba(59,130,246,.25);
+        }
+        body.theme-gaming .quiz-eq-part  { color: #93c5fd; }
+        body.theme-gaming .quiz-eq-arrow { color: #3b82f6; }
+        body.theme-gaming .quiz-eq-blank { background: rgba(124,58,237,.18); border-color: rgba(124,58,237,.5); color: #c4b5fd; }
+        body.theme-gaming .quiz-opt {
+            background: #03040e; border-color: rgba(59,130,246,.25); color: #cdd8ff;
+        }
+        body.theme-gaming .quiz-opt:hover:not(:disabled) { border-color: #3b82f6; background: rgba(59,130,246,.08); }
+        body.theme-gaming .quiz-opt .opt-letter { background: #07091a; border-color: rgba(59,130,246,.3); }
+        body.theme-gaming #quizNextBtn { background: #3b82f6; }
+        body.theme-gaming #quizNextBtn:hover { background: #1d4ed8; }
 
         /* ---- PDF / Print export ---- */
         #printExport { display: none; }
+        /* ── Print / PDF table styles ── */
         .print-chapter-title {
-            font-family: 'Fraunces', serif; font-weight: 700; font-size: 15pt;
-            margin: 18pt 0 6pt; padding-bottom: 3pt; border-bottom: 1.5pt solid #144A3D; color: #144A3D;
+            font-family: 'Fraunces', serif; font-weight: 700; font-size: 13pt;
+            margin: 20pt 0 5pt; padding: 4pt 6pt; border-left: 4pt solid #144A3D;
+            color: #144A3D; background: #f0f7f4; break-after: avoid;
         }
-        .print-reaction { margin: 0 0 10pt; padding-bottom: 8pt; border-bottom: 0.5pt solid #ccc; break-inside: avoid; }
-        .print-reaction-name { font-weight: 700; font-size: 10.5pt; margin-bottom: 2pt; }
-        .print-reaction-eq { font-size: 9pt; color: #333; margin-bottom: 3pt; }
-        .print-reaction-mnemonic { font-size: 9.5pt; font-style: italic; color: #7a5200; }
+        .print-tbl {
+            width: 100%; border-collapse: collapse;
+            font-size: 7.5pt; margin-bottom: 16pt; break-inside: auto;
+        }
+        .print-tbl thead tr {
+            background: #144A3D; color: #fff;
+        }
+        .print-tbl thead th {
+            padding: 4pt 5pt; text-align: left; font-weight: 700;
+            font-family: 'Inter', sans-serif; letter-spacing: .03em;
+            border: 0.5pt solid #0d3328;
+        }
+        .print-tbl tbody tr { break-inside: avoid; }
+        .print-tbl tbody tr:nth-child(even) { background: #f8fdfb; }
+        .print-tbl tbody tr:hover { background: #e8f5f0; }
+        .print-tbl td {
+            padding: 4pt 5pt; vertical-align: top;
+            border: 0.5pt solid #d0e8e0; line-height: 1.35;
+            font-family: 'Inter', sans-serif; color: #1a1a1a;
+        }
+        .print-tbl td.col-name  { font-weight: 700; color: #144A3D; min-width: 90pt; }
+        .print-tbl td.col-eq    { font-family: 'IBM Plex Mono', monospace; font-size: 7pt; color: #0f3460; }
+        .print-tbl td.col-memo  { font-style: italic; color: #5a3e00; font-size: 7pt; }
+        .print-tbl td.col-adv   { text-align: center; color: #b1402a; font-weight: 700; font-size: 7pt; }
+        .print-adv-tag { color: #b1402a; font-size: 6.5pt; font-weight: 700; display: block; }
         @media print {
             body > *:not(#printExport) { display: none !important; }
-            #printExport { display: block !important; }
-            #printExport .print-title-page { text-align: center; margin-bottom: 24pt; }
-            @page { margin: 16mm 14mm; }
+            #printExport { display: block !important; font-family: 'Inter', sans-serif; }
+            #printExport .print-title-page { text-align: center; margin-bottom: 20pt; }
+            @page { margin: 12mm 10mm; size: A4 landscape; }
+            .print-tbl thead { display: table-header-group; }
         }
     </style>
 </head>
@@ -220,14 +885,18 @@
                     <i class="fa-solid fa-flask-vial text-amber-300"></i> JEE Organic Chemistry Field Guide
                 </h1>
                 <p class="text-white/70 mt-0.5 text-xs sm:text-sm flex items-center flex-wrap gap-x-3 gap-y-1">
-                    <span><span class="font-mono-eq text-amber-300">457</span> reactions, virtualized — only what's on screen is ever in the DOM.</span>
+                    <span><span class="font-mono-eq text-amber-300" id="totalReactionCount">457</span> reactions, virtualized — only what's on screen is ever in the DOM.</span>
                     <span id="revisionCounter" class="font-mono-eq text-amber-200"></span>
                 </p>
             </div>
             <div class="flex items-center gap-2 shrink-0 flex-wrap">
                 <button type="button" id="lookToggle" onclick="toggleGamingMode()"
                         class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors">
-                    <i class="fa-solid fa-gamepad text-amber-300"></i> <span id="lookToggleLabel">Gaming Mode</span>
+                    <i class="fa-solid fa-gamepad text-amber-300" id="lookToggleIcon"></i> <span id="lookToggleLabel">Solo Leveling Mode</span>
+                </button>
+                <button type="button" onclick="openLsPreview()"
+                        class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors">
+                    <i class="fa-solid fa-table text-amber-300"></i> <span>Preview Table</span>
                 </button>
                 <button type="button" id="exportPdfBtn" onclick="exportToPDF()"
                         class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors">
@@ -236,6 +905,14 @@
                 <a href="short-notes.html" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors">
                     <i class="fa-solid fa-list-check text-amber-300"></i> Quick Notes
                 </a>
+                <button type="button" onclick="openIntermediates()"
+                        class="flex items-center gap-2 bg-amber-400/20 hover:bg-amber-400/35 border border-amber-300/40 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors text-amber-200">
+                    <i class="fa-solid fa-atom text-amber-300"></i> Intermediates
+                </button>
+                <button type="button" onclick="openQuiz()"
+                        class="flex items-center gap-2 bg-emerald-400/20 hover:bg-emerald-400/35 border border-emerald-300/40 rounded-lg px-3.5 py-2 text-sm font-semibold transition-colors text-emerald-200">
+                    <i class="fa-solid fa-bolt text-emerald-300"></i> Quiz
+                </button>
             </div>
         </div>
     </header>
@@ -245,7 +922,7 @@
         <div class="max-w-[1500px] mx-auto flex flex-col sm:flex-row gap-2">
             <div class="relative flex-1">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="searchInput" placeholder="Search 457 reactions..."
+                <input type="text" id="searchInput" placeholder="Search reactions..."
                        class="w-full pl-9 pr-3 py-1.5 border border-slate-300 rounded-lg focus:outline-none text-sm">
             </div>
             <select id="tagFilter" class="w-full sm:w-auto bg-slate-50 border border-slate-300 rounded-lg px-2 py-1.5 text-sm">
@@ -286,6 +963,16 @@
                     <i class="fa-solid fa-arrow-left"></i> Back to list
                 </button>
             </div>
+            <!-- Prev / Next reaction navigation bar -->
+            <div id="rxnNavBar" class="hidden">
+                <button class="nav-btn" id="prevRxnBtn" onclick="navigateReaction(-1)" title="Previous reaction">
+                    <i class="fa-solid fa-chevron-left"></i> Prev
+                </button>
+                <span id="rxnNavCounter"></span>
+                <button class="nav-btn" id="nextRxnBtn" onclick="navigateReaction(1)" title="Next reaction">
+                    Next <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
             <div id="detailInner">
                 <div class="detail-placeholder">
                     <i class="fa-solid fa-flask-vial text-4xl mb-3 text-slate-300"></i>
@@ -299,7 +986,7 @@
         // =================================================================
         // VIRTUALIZED MASTER LIST
         // -----------------------------------------------------------------
-        // Instead of putting all 457 reactions in the DOM (paginated,
+        // Instead of putting all reactions in the DOM (paginated,
         // accordion, or otherwise) and hiding/showing them, only the rows
         // that are actually scrolled into view are ever created. Everything
         // else is just entries in a plain JS array. Scrolling through the
@@ -423,8 +1110,13 @@
         // up if needed instead of silently giving up and leaving raw "$$ ... $$"
         // source text on screen (which is what happened before this fix).
         function typesetMath(el, attemptsLeft) {
-            attemptsLeft = attemptsLeft === undefined ? 25 : attemptsLeft;
+            attemptsLeft = attemptsLeft === undefined ? 40 : attemptsLeft;
             if (window.MathJax && typeof window.MathJax.typesetPromise === 'function') {
+                // Clear any previously-rendered MathJax output so a fresh render
+                // doesn't double-render or leave stale jax in the element.
+                if (window.MathJax.typesetClear) {
+                    try { window.MathJax.typesetClear([el]); } catch(e) {}
+                }
                 window.MathJax.typesetPromise([el]).catch(() => {});
             } else if (window.MathJax && window.MathJax.startup && window.MathJax.startup.promise) {
                 // Script has loaded and is initializing — wait for it, then typeset.
@@ -432,9 +1124,8 @@
                     if (window.MathJax.typesetPromise) window.MathJax.typesetPromise([el]).catch(() => {});
                 });
             } else if (attemptsLeft > 0) {
-                // Script tag hasn't even finished loading yet (slow connection) —
-                // retry shortly rather than giving up.
-                setTimeout(() => typesetMath(el, attemptsLeft - 1), 200);
+                // Script tag hasn't even finished loading yet — retry with backoff.
+                setTimeout(() => typesetMath(el, attemptsLeft - 1), 250);
             }
         }
 
@@ -446,9 +1137,9 @@
             detail.innerHTML = detailHTML(r);
             typesetMath(detail);
             logRevision(id);
-            scheduleRender(); // refresh visible rows so the selected one highlights
+            scheduleRender();
+            updateNavBar();
             if (window.innerWidth <= 640) {
-                // Phone: swap to a full-screen detail "page" instead of the split view
                 document.getElementById('splitShell').classList.add('detail-open');
                 document.body.classList.add('mobile-detail-open');
                 detail.scrollTop = 0;
@@ -456,6 +1147,113 @@
                 document.getElementById('detailPane').scrollIntoView({ behavior: 'smooth' });
             }
         }
+
+        // ── Prev / Next navigation ──
+        function reactionItems() {
+            return allItems.filter(function(i) { return i.type === 'reaction'; });
+        }
+        function currentReactionIndex() {
+            return reactionItems().findIndex(function(i) { return i.r.id === selectedId; });
+        }
+        function navigateReaction(delta) {
+            var rxns = reactionItems();
+            var idx  = currentReactionIndex();
+            var next = rxns[idx + delta];
+            if (next) {
+                selectReaction(next.r.id);
+                // Scroll the list so the selected row is visible
+                var newIdx = idx + delta;
+                var listEl = document.getElementById('listSpacer').parentElement;
+                if (listEl) listEl.scrollTop = newIdx * 50 - 80;
+                document.getElementById('detailPane').scrollTop = 0;
+            }
+        }
+        function updateNavBar() {
+            var bar   = document.getElementById('rxnNavBar');
+            var rxns  = reactionItems();
+            var idx   = currentReactionIndex();
+            if (idx < 0 || rxns.length === 0) { bar.classList.add('hidden'); return; }
+            bar.classList.remove('hidden');
+            document.getElementById('prevRxnBtn').disabled = (idx === 0);
+            document.getElementById('nextRxnBtn').disabled = (idx === rxns.length - 1);
+            document.getElementById('rxnNavCounter').textContent =
+                (idx + 1) + ' / ' + rxns.length;
+        }
+
+        // ── Landscape preview modal ──
+        function buildTableHTML() {
+            var items = buildItemList(currentPredicate());
+            var reactionCount = items.filter(function(i){ return i.type === 'reaction'; }).length;
+            var html =
+                '<div style="font-family:Inter,sans-serif;padding:.5rem 0 1rem;">' +
+                '<h2 style="margin:0 0 2px;font-family:Fraunces,serif;font-size:16pt;font-weight:700;color:#144A3D;">JEE Organic Chemistry Field Guide</h2>' +
+                '<p style="margin:0 0 10px;font-size:8.5pt;color:#555;">' + reactionCount + ' reactions &nbsp;&middot;&nbsp; ' +
+                    new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) + '</p></div>';
+            var tableOpen = false;
+            var rowNum = 0;
+            items.forEach(function(item) {
+                if (item.type === 'header') {
+                    if (tableOpen) { html += '</tbody></table>'; tableOpen = false; }
+                    rowNum = 0;
+                    html += '<div class="print-chapter-title" style="margin-top:14px;">' + escHtml(item.name) +
+                        '<span style="font-weight:400;font-size:8.5pt;color:#3a7a60;margin-left:8pt;">(' + item.count + ')</span></div>';
+                    html += '<table class="print-tbl"><thead><tr>' +
+                        '<th style="width:3%">#</th>' +
+                        '<th style="width:13%">Reaction Name</th>' +
+                        '<th style="width:11%">Substrate</th>' +
+                        '<th style="width:12%">Reagent / Condition</th>' +
+                        '<th style="width:11%">Product</th>' +
+                        '<th style="width:9%">Byproduct</th>' +
+                        '<th style="width:22%">Full Equation</th>' +
+                        '<th style="width:19%">Memory Trick</th>' +
+                        '</tr></thead><tbody>';
+                    tableOpen = true;
+                } else {
+                    var r = item.r;
+                    var p = parseRxnParts(r.reaction);
+                    rowNum++;
+                    var bg = (rowNum % 2 === 0) ? 'background:#f8fdfb;' : '';
+                    html += '<tr style="' + bg + '">' +
+                        '<td style="text-align:center;color:#aaa;font-size:7pt;">' + rowNum + '</td>' +
+                        '<td class="col-name">' + escHtml(r.name) +
+                            (r.isAdv ? '<span class="print-adv-tag">&#9733; JEE Adv</span>' : '') + '</td>' +
+                        '<td class="col-eq">' + escHtml(p.substrate)  + '</td>' +
+                        '<td>'               + escHtml(p.condition)  + '</td>' +
+                        '<td class="col-eq">' + escHtml(p.product)    + '</td>' +
+                        '<td class="col-eq">' + escHtml(p.byproduct)  + '</td>' +
+                        '<td class="col-eq" style="font-size:6.5pt;color:#234;">' + escHtml(latexToText(r.reaction)) + '</td>' +
+                        '<td class="col-memo">' + escHtml(r.mnemonic) + '</td>' +
+                    '</tr>';
+                }
+            });
+            if (tableOpen) { html += '</tbody></table>'; }
+            return html;
+        }
+        function openLsPreview() {
+            document.getElementById('lsModalBody').innerHTML = buildTableHTML();
+            document.getElementById('lsModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLsModal() {
+            document.getElementById('lsModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function lsPrint() {
+            // Swap printExport content with the table, print, then restore
+            var container = document.getElementById('printExport');
+            container.innerHTML = document.getElementById('lsModalBody').innerHTML;
+            closeLsModal();
+            requestAnimationFrame(function() {
+                window.print();
+                container.innerHTML = '';
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLsModal();
+            // Arrow key navigation when detail pane is focused
+            if (e.key === 'ArrowRight' && selectedId !== null && !e.target.matches('input,select,textarea')) navigateReaction(1);
+            if (e.key === 'ArrowLeft'  && selectedId !== null && !e.target.matches('input,select,textarea')) navigateReaction(-1);
+        });
 
         // Returns from the full-screen phone detail view back to the list
         function goBackToList() {
@@ -469,8 +1267,52 @@
         // picks up the new palette automatically; no layout code changes.
         function toggleGamingMode() {
             const on = document.body.classList.toggle('theme-gaming');
-            document.getElementById('lookToggleLabel').textContent = on ? 'Field Guide' : 'Gaming Mode';
-            document.querySelector('#lookToggle i').className = on ? 'fa-solid fa-book-open text-amber-300' : 'fa-solid fa-gamepad text-amber-300';
+            document.getElementById('lookToggleLabel').textContent = on ? '[ EXIT SYSTEM ]' : 'Solo Leveling Mode';
+            const icon = document.getElementById('lookToggleIcon');
+            icon.className = on ? 'fa-solid fa-door-open' : 'fa-solid fa-gamepad text-amber-300';
+            if (on) {
+                const notif = document.createElement('div');
+                notif.id = 'slNotif';
+                notif.style.cssText = [
+                    'position:fixed','top:50%','left:50%',
+                    'transform:translate(-50%,-50%) scale(.9)',
+                    'background:rgba(7,9,26,0.97)',
+                    'border:1px solid rgba(59,130,246,0.6)',
+                    'box-shadow:0 0 60px -10px rgba(59,130,246,0.7),0 0 0 1px rgba(59,130,246,0.15)',
+                    'color:#93c5fd','font-family:Orbitron,sans-serif','font-size:.85rem',
+                    'letter-spacing:.15em','text-align:center','padding:1.5rem 3rem',
+                    'z-index:99999','border-radius:.5rem','pointer-events:none',
+                    'animation:slNotifAnim .6s cubic-bezier(.2,.85,.4,1) both'
+                ].join(';');
+                notif.innerHTML =
+                    '<div style="font-size:.62rem;color:rgba(96,165,250,.6);margin-bottom:.4rem;letter-spacing:.2em">' +
+                        '&#9670; SYSTEM NOTIFICATION &#9670;' +
+                    '</div>' +
+                    '<div style="font-size:1.1rem;font-weight:900;background:linear-gradient(90deg,#60a5fa,#a78bfa);' +
+                        '-webkit-background-clip:text;background-clip:text;color:transparent">' +
+                        'YOU HAVE AWAKENED' +
+                    '</div>' +
+                    '<div style="font-size:.6rem;margin-top:.5rem;color:rgba(96,165,250,.5);letter-spacing:.1em">' +
+                        'LOADING SYSTEM INTERFACE...' +
+                    '</div>';
+                if (!document.getElementById('slNotifStyle')) {
+                    const st = document.createElement('style');
+                    st.id = 'slNotifStyle';
+                    st.textContent = '@keyframes slNotifAnim {' +
+                        '0%{opacity:0;transform:translate(-50%,-50%) scale(.85)}' +
+                        '60%{opacity:1;transform:translate(-50%,-50%) scale(1.03)}' +
+                        '100%{opacity:1;transform:translate(-50%,-50%) scale(1)}' +
+                        '}';
+                    document.head.appendChild(st);
+                }
+                document.body.appendChild(notif);
+                setTimeout(function() {
+                    notif.style.transition = 'opacity .5s, transform .5s';
+                    notif.style.opacity = '0';
+                    notif.style.transform = 'translate(-50%,-50%) scale(1.05)';
+                    setTimeout(function() { notif.remove(); }, 500);
+                }, 1800);
+            }
         }
 
         // If the window is resized/rotated past the phone breakpoint while a
@@ -506,7 +1348,7 @@
             allItems = buildItemList(currentPredicate());
             document.getElementById('listViewport').scrollTop = 0;
             const count = allItems.filter(i => i.type === 'reaction').length;
-            document.getElementById('resultCountDisplay').textContent = `${count} of 457 reactions`;
+            document.getElementById('resultCountDisplay').textContent = `${count} of ${reactionsData.length} reactions`;
             scheduleRender();
         }
 
@@ -726,27 +1568,6 @@
             ["Amines & Biomolecules", "Kiliani-Fischer Synthesis", "\\text{Aldose} + HCN \\rightarrow \\xrightarrow{H_3O^+} \\text{Higher Aldose}", "Aldose ki chain mein ek carbon badha deta hai."],
             ["Amines & Biomolecules", "Ruff Degradation", "\\text{Aldohexose} \\xrightarrow{Br_2/H_2O, Fe^{3+}} \\text{Aldopentose} + CO_2", "Aldose ki chain se ek carbon ghata deta hai."]
         ];
-
-        while (reactionsData.length < 220) {
-            const idx = reactionsData.length - 98;
-            const item = genericNames[idx % genericNames.length];
-            const isAdv = idx % 2 === 0;
-            addR(
-                `${item[1]} (Variation ${Math.floor(idx / genericNames.length) + 1})`,
-                item[0],
-                isAdv,
-                [isAdv ? "RXN" : "PREP"],
-                `${item[0]} Transformation Step`,
-                item[2],
-                item[3],
-                `Core concept in ${item[0]} chapter involving ${item[1]}.`,
-                isAdv ? "Carbocation / Carbanion" : "Concerted Transition State",
-                isAdv ? "Carbocation" : "Concerted",
-                "Standard Mechanism",
-                `${item[0]} Syllabus Section`,
-                "Important for JEE Main and Advanced concept verification."
-            );
-        }
 
 
         // ================= NEW: ALDEHYDES & KETONES (extracted from ALDEHYDES_AND_KETONES.pdf) =================
@@ -1085,7 +1906,15 @@
                 (reactionsByChapter[r.group] = reactionsByChapter[r.group] || []).push(r);
             });
 
-            document.getElementById('searchInput').addEventListener('input', debouncedApplyFilters);
+            // Update counts dynamically based on actual data length
+            const totalCount = reactionsData.length;
+            const countEl = document.getElementById('totalReactionCount');
+            if (countEl) countEl.textContent = totalCount;
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.placeholder = `Search ${totalCount} reactions...`;
+            document.title = `JEE Organic Chemistry — ${totalCount}-Reaction Field Guide`;
+
+            searchInput.addEventListener('input', debouncedApplyFilters);
             document.getElementById('tagFilter').addEventListener('change', applyFilters);
             document.getElementById('levelFilter').addEventListener('change', applyFilters);
 
@@ -1134,42 +1963,192 @@
         // browser's native print dialog — "Save as PDF" there is the actual
         // export step, and it works fully offline since nothing but MathJax
         // rendering is needed once the page itself is loaded.
+        // ── Superscript / subscript helpers ──
+        function toSup(x) {
+            var m = {'0':'\u2070','1':'\u00b9','2':'\u00b2','3':'\u00b3','4':'\u2074',
+                     '5':'\u2075','6':'\u2076','7':'\u2077','8':'\u2078','9':'\u2079',
+                     '+':'\u207a','-':'\u207b','n':'\u207f'};
+            return x.split('').map(function(c){ return m[c]||c; }).join('');
+        }
+        function toSub(x) {
+            var m = {'0':'\u2080','1':'\u2081','2':'\u2082','3':'\u2083','4':'\u2084',
+                     '5':'\u2085','6':'\u2086','7':'\u2087','8':'\u2088','9':'\u2089',
+                     '+':'\u208a','-':'\u208b'};
+            return x.split('').map(function(c){ return m[c]||c; }).join('');
+        }
+
+        // Convert LaTeX reaction string to readable Unicode — no MathJax needed
+        function latexToText(s) {
+            if (!s) return '\u2014';
+            // 1. LaTeX space/skip commands → plain space
+            s = s.replace(/\\[ ;,:.!]/g, ' ');
+            s = s.replace(/\\quad\b|\\qquad\b/g, '  ');
+            // 2. Text / mathrm wrappers (keep content)
+            s = s.replace(/\\(?:text|mathrm|mathbf|mathit|tfrac|operatorname|mbox|ce)\{([^}]*)\}/g, '$1');
+            // 3. Arrows with optional above/below args
+            s = s.replace(/\\xrightarrow\s*(?:\[[^\]]*\])?\{([^}]*)\}/g, ' \u2192[$1] ');
+            s = s.replace(/\\xleftarrow\s*(?:\[[^\]]*\])?\{([^}]*)\}/g, ' \u2190[$1] ');
+            s = s.replace(/\\xrightleftharpoons\s*(?:\[[^\]]*\])?\{([^}]*)\}/g, ' \u21cc[$1] ');
+            s = s.replace(/\\xrightleftharpoons\b/g, ' \u21cc ');
+            s = s.replace(/\\rightleftharpoons\b/g, ' \u21cc ');
+            s = s.replace(/\\rightarrow\b/g, ' \u2192 ');
+            s = s.replace(/\\leftarrow\b/g, ' \u2190 ');
+            s = s.replace(/\\to\b/g, ' \u2192 ');
+            s = s.replace(/\\longrightarrow\b/g, ' \u27f6 ');
+            // 4. Superscripts (must come before subscripts)
+            s = s.replace(/\^\{([^}]*)\}/g, function(_, x){ return toSup(x); });
+            s = s.replace(/\^([0-9+\-n])/g, function(_, c){ return toSup(c); });
+            // 5. Subscripts
+            s = s.replace(/_\{([^}]*)\}/g, function(_, x){ return toSub(x); });
+            s = s.replace(/_([0-9])/g,   function(_, c){ return toSub(c); });
+            // 6. Greek letters
+            s = s.replace(/\\Delta\b/g,'\u0394').replace(/\\delta\b/g,'\u03b4');
+            s = s.replace(/\\alpha\b/g,'\u03b1').replace(/\\beta\b/g, '\u03b2');
+            s = s.replace(/\\gamma\b/g,'\u03b3').replace(/\\pi\b/g,   '\u03c0');
+            s = s.replace(/\\mu\b/g,   '\u03bc').replace(/\\nu\b/g,   '\u03bd');
+            s = s.replace(/\\sigma\b/g,'\u03c3').replace(/\\lambda\b/g,'\u03bb');
+            s = s.replace(/\\omega\b/g,'\u03c9').replace(/\\theta\b/g, '\u03b8');
+            // 7. Math symbols
+            s = s.replace(/\\cdot\b/g,  '\u00b7').replace(/\\times\b/g,'\u00d7');
+            s = s.replace(/\\pm\b/g,    '\u00b1').replace(/\\geq\b/g,  '\u2265');
+            s = s.replace(/\\leq\b/g,   '\u2264').replace(/\\neq\b/g,  '\u2260');
+            s = s.replace(/\\equiv\b/g, '\u2261').replace(/\\approx\b/g,'\u2248');
+            s = s.replace(/\\circ\b/g,  '\u00b0').replace(/\\bullet\b/g,'\u2022');
+            s = s.replace(/\\infty\b/g, '\u221e').replace(/\\partial\b/g,'\u2202');
+            s = s.replace(/\\oplus\b/g, '\u2295').replace(/\\otimes\b/g, '\u2297')
+                .replace(/\\downarrow\b/g, '\u2193').replace(/\\uparrow\b/g, '\u2191');
+            // 8. Fractions
+            s = s.replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '($1)/($2)');
+            // 9. Remove any remaining \cmd{content} — keep content
+            s = s.replace(/\\[a-zA-Z]+\*?\{([^}]*)\}/g, '$1');
+            // 10. Remove bare \cmd with no arg
+            s = s.replace(/\\[a-zA-Z]+\b/g, '');
+            // 11. Remove ALL remaining lone backslashes
+            s = s.replace(/\\/g, '');
+            // 12. Strip remaining { }
+            s = s.replace(/[{}]/g, '');
+            // 13. Tidy spacing and commas
+            s = s.replace(/\s{2,}/g, ' ').replace(/\s+,/g, ',').trim();
+            return s || '\u2014';
+        }
+
+
+        // Parse LHS/condition/RHS from a readable (already-converted) reaction string
+        function parseRxnParts(latex) {
+            var readable = latexToText(latex);
+            // Split on arrow
+            var arrowMatch = readable.match(/→|⇌/);
+            if (!arrowMatch) return { substrate:'', condition:'', product:'', byproduct: '' };
+            var arrowIdx = readable.search(/→|⇌/);
+            var lhs = readable.slice(0, arrowIdx).trim();
+            var rest = readable.slice(arrowIdx).trim();
+
+            // Condition is in [...] right after arrow
+            var condMatch = rest.match(/^[→⇌]\s*\[([^\]]*)\]\s*/);
+            var condition = '';
+            var rhs = rest;
+            if (condMatch) {
+                condition = condMatch[1];
+                rhs = rest.slice(condMatch[0].length).trim();
+            } else {
+                rhs = rest.replace(/^[→⇌]\s*/, '').trim();
+            }
+
+            // LHS: substrate + optional reagent
+            var lhsParts = lhs.split(/\s*\+\s*/);
+            var substrate = lhsParts[0] || '';
+            var reagentLhs = lhsParts.slice(1).join(' + ');
+            var fullCondition = [condition, reagentLhs].filter(Boolean).join(', ');
+
+            // RHS: product + byproduct
+            var rhsParts = rhs.split(/\s*\+\s*/);
+            var product   = rhsParts[0] || '';
+            var byproduct = rhsParts.slice(1).join(' + ');
+
+            // Strip trailing noise punctuation
+            var clean = function(v){ return v.replace(/[;:,\.\s]+$/, '').trim() || '—'; };
+            return {
+                substrate:  clean(substrate),
+                condition:  fullCondition || '—',
+                product:    clean(product),
+                byproduct:  clean(byproduct)
+            };
+        }
+
         function exportToPDF() {
-            const btn = document.getElementById('exportPdfBtn');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-300"></i> Preparing…`;
+            var btn = document.getElementById('exportPdfBtn');
+            var originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-amber-300"></i> Building…';
             btn.disabled = true;
 
-            const items = buildItemList(currentPredicate());
-            const reactionCount = items.filter(i => i.type === 'reaction').length;
-            let html = `<div class="print-title-page">
-                <h1 style="font-family:'Fraunces',serif;font-size:20pt;font-weight:700;margin-bottom:4pt;">JEE Organic Chemistry Field Guide</h1>
-                <p style="font-size:10pt;color:#555;">${reactionCount} reaction${reactionCount === 1 ? '' : 's'} — exported ${new Date().toLocaleDateString()}</p>
-            </div>`;
+            var items = buildItemList(currentPredicate());
+            var reactionCount = items.filter(function(i){ return i.type === 'reaction'; }).length;
 
-            items.forEach(item => {
+            var html =
+                '<div class="print-title-page">' +
+                    '<h1 style="font-family:Fraunces,serif;font-size:22pt;font-weight:700;margin-bottom:2pt;color:#144A3D;">JEE Organic Chemistry</h1>' +
+                    '<p style="font-size:11pt;color:#144A3D;font-family:Fraunces,serif;font-weight:600;margin:0 0 5pt;">Field Guide — Quick Reference Table</p>' +
+                    '<p style="font-size:9pt;color:#666;">' + reactionCount + ' reactions · Exported ' +
+                        new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'}) + '</p>' +
+                    '<hr style="border:none;border-top:2pt solid #144A3D;margin:6pt 0 0;">' +
+                '</div>';
+
+            var tableOpen = false;
+            var rowNum = 0;
+
+            items.forEach(function(item) {
                 if (item.type === 'header') {
-                    html += `<div class="print-chapter-title">${item.name} <span style="font-weight:400;font-size:10pt;color:#777;">(${item.count})</span></div>`;
+                    if (tableOpen) { html += '</tbody></table>'; tableOpen = false; }
+                    rowNum = 0;
+                    html +=
+                        '<div class="print-chapter-title">' + escHtml(item.name) +
+                        '<span style="font-weight:400;font-size:8.5pt;color:#3a7a60;margin-left:8pt;">(' + item.count + ')</span></div>' +
+                        '<table class="print-tbl"><thead><tr>' +
+                            '<th style="width:3%">#</th>' +
+                            '<th style="width:16%">Reaction Name</th>' +
+                            '<th style="width:15%">Substrate</th>' +
+                            '<th style="width:15%">Reagent / Condition</th>' +
+                            '<th style="width:15%">Product</th>' +
+                            '<th style="width:13%">Byproduct</th>' +
+                            '<th style="width:23%">Full Equation</th>' +
+                        '</tr></thead><tbody>';
+                    tableOpen = true;
                 } else {
-                    const r = item.r;
-                    html += `<div class="print-reaction">
-                        <div class="print-reaction-name">${r.name}${r.isAdv ? ' <span style="font-size:8pt;color:#b1402a;">(JEE Advanced)</span>' : ''}</div>
-                        <div class="print-reaction-eq">\\[${r.reaction}\\]</div>
-                        <div class="print-reaction-mnemonic">💡 ${r.mnemonic}</div>
-                    </div>`;
+                    var r = item.r;
+                    var p = parseRxnParts(r.reaction);
+                    rowNum++;
+                    var bg = (rowNum % 2 === 0) ? 'background:#f8fdfb;' : '';
+                    html +=
+                        '<tr style="' + bg + '">' +
+                            '<td style="text-align:center;color:#aaa;font-size:7pt;">' + rowNum + '</td>' +
+                            '<td class="col-name">' + escHtml(r.name) +
+                                (r.isAdv ? '<span class="print-adv-tag">★ JEE Adv</span>' : '') +
+                            '</td>' +
+                            '<td class="col-eq">' + escHtml(p.substrate)  + '</td>' +
+                            '<td>'                + escHtml(p.condition)  + '</td>' +
+                            '<td class="col-eq">' + escHtml(p.product)    + '</td>' +
+                            '<td class="col-eq">' + escHtml(p.byproduct)  + '</td>' +
+                            '<td class="col-eq" style="font-size:6.5pt;color:#234;">' + escHtml(latexToText(r.reaction)) + '</td>' +
+                        '<td class="col-memo">' + escHtml(r.mnemonic) + '</td>' +
+                        '</tr>';
                 }
             });
 
-            const container = document.getElementById('printExport');
+            if (tableOpen) { html += '</tbody></table>'; }
+
+            var container = document.getElementById('printExport');
             container.innerHTML = html;
 
-            // MathJax needs a real typeset pass on the freshly-injected equations
-            // before print, otherwise the PDF would show raw "\[ ... \]" source.
-            typesetMathThen(container, () => {
+            // No MathJax needed — all text is plain Unicode, print immediately
+            requestAnimationFrame(function() {
                 window.print();
                 btn.innerHTML = originalHTML;
                 btn.disabled = false;
             });
+        }
+
+        function escHtml(str) {
+            return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
         // Same waiting logic as typesetMath, but runs a callback once done
@@ -1337,7 +2316,718 @@
         }
 
 
+        // ===================== QUIZ ENGINE =====================
+        var quizQuestions = [];
+        var quizCurrent   = 0;
+        var quizScore     = 0;
+        var quizWrong     = 0;
+        var quizAnswered  = false;
+        var QUIZ_TOTAL    = 120;
+        var LETTERS       = ['A','B','C','D'];
+
+        function shuffleArr(arr) {
+            for (var i = arr.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+            }
+            return arr;
+        }
+
+        function buildQuizQuestions() {
+            // Only use reactions with a real parsed condition, substrate, product
+            var pool = reactionsData.filter(function(r) {
+                var p = parseRxnParts(r.reaction);
+                return p.condition !== '—' && p.substrate !== '—' && p.product !== '—'
+                    && p.condition.length > 2 && p.condition.length < 80;
+            });
+
+            // Shuffle and cap at QUIZ_TOTAL
+            shuffleArr(pool);
+            var selected = pool.slice(0, QUIZ_TOTAL);
+
+            // All unique conditions for distractor pool
+            var allConds = pool.map(function(r){ return parseRxnParts(r.reaction).condition; })
+                              .filter(function(c,i,a){ return a.indexOf(c) === i; });
+
+            quizQuestions = selected.map(function(r) {
+                var p = parseRxnParts(r.reaction);
+                var correct = p.condition;
+
+                // Pick 3 distractors from other conditions
+                var distractors = shuffleArr(
+                    allConds.filter(function(c){ return c !== correct; })
+                ).slice(0, 3);
+
+                // If we couldn't get 3 distinct, pad with generic wrong ones
+                while (distractors.length < 3) {
+                    distractors.push(['H₂SO₄ (conc.)', 'NaOH, H₂O', 'HBr / peroxide'][distractors.length]);
+                }
+
+                var options = shuffleArr([correct].concat(distractors));
+                return {
+                    name:      r.name,
+                    chapter:   r.group,
+                    substrate: p.substrate,
+                    product:   p.product,
+                    correct:   correct,
+                    options:   options,
+                    isAdv:     r.isAdv
+                };
+            });
+        }
+
+        function openQuiz() {
+            document.getElementById('quizModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            startQuiz();
+        }
+        function closeQuiz() {
+            document.getElementById('quizModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function startQuiz() {
+            quizCurrent  = 0;
+            quizScore    = 0;
+            quizWrong    = 0;
+            quizAnswered = false;
+            buildQuizQuestions();
+            document.getElementById('quizResults').classList.remove('show');
+            document.getElementById('quizQuestion').style.display = '';
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            if (quizCurrent >= quizQuestions.length) { showResults(); return; }
+            var q = quizQuestions[quizCurrent];
+            quizAnswered = false;
+
+            // Progress
+            var pct = (quizCurrent / quizQuestions.length) * 100;
+            document.getElementById('quizProgressFill').style.width = pct + '%';
+            document.getElementById('quizQCounter').textContent =
+                (quizCurrent + 1) + ' / ' + quizQuestions.length;
+
+            // Meta
+            document.getElementById('qChapter').textContent = q.chapter;
+            document.getElementById('qNum').textContent = 'Question ' + (quizCurrent + 1);
+            document.getElementById('qName').textContent = q.name + (q.isAdv ? '  ★ JEE Advanced' : '');
+
+            // Equation box: substrate → [?] → product
+            var eqEl = document.getElementById('qEquation');
+            eqEl.innerHTML =
+                '<span class="quiz-eq-part">' + escHtml(q.substrate) + '</span>' +
+                '<span class="quiz-eq-arrow">→</span>' +
+                '<span class="quiz-eq-blank">? REAGENT / CONDITION ?</span>' +
+                '<span class="quiz-eq-arrow">→</span>' +
+                '<span class="quiz-eq-part">' + escHtml(q.product) + '</span>';
+
+            // Options
+            var optEl = document.getElementById('qOptions');
+            optEl.innerHTML = '';
+            q.options.forEach(function(opt, i) {
+                var btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.innerHTML =
+                    '<span class="opt-letter">' + LETTERS[i] + '</span>' +
+                    escHtml(opt);
+                btn.onclick = function() { answerQuiz(opt, btn, q.correct); };
+                optEl.appendChild(btn);
+            });
+
+            // Reset feedback & buttons
+            var fb = document.getElementById('quizFeedback');
+            fb.style.display = 'none'; fb.className = '';
+            document.getElementById('quizNextBtn').style.display = 'none';
+            document.getElementById('quizRestartBtn').style.display = 'none';
+            updateScoreDisplay();
+        }
+
+        function answerQuiz(chosen, btnEl, correct) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            var isCorrect = (chosen === correct);
+            if (isCorrect) { quizScore++; } else { quizWrong++; }
+
+            // Colour all options
+            var allOpts = document.getElementById('qOptions').querySelectorAll('.quiz-opt');
+            allOpts.forEach(function(b) {
+                b.disabled = true;
+                var txt = b.textContent.slice(1).trim(); // strip letter
+                if (txt === correct) { b.classList.add('correct'); }
+                else if (b === btnEl && !isCorrect) { b.classList.add('wrong'); }
+            });
+
+            // Feedback
+            var fb = document.getElementById('quizFeedback');
+            fb.style.display = 'block';
+            if (isCorrect) {
+                fb.className = 'correct';
+                fb.innerHTML = '✓ Correct! <strong>' + escHtml(correct) + '</strong> is the right reagent/condition.';
+            } else {
+                fb.className = 'wrong';
+                fb.innerHTML = '✗ Not quite. The correct answer is <strong>' + escHtml(correct) + '</strong>.';
+            }
+
+            document.getElementById('quizNextBtn').style.display = '';
+            if (quizCurrent === quizQuestions.length - 1) {
+                document.getElementById('quizNextBtn').innerHTML = 'See Results <i class="fa-solid fa-trophy"></i>';
+            } else {
+                document.getElementById('quizNextBtn').innerHTML = 'Next <i class="fa-solid fa-chevron-right"></i>';
+            }
+            updateScoreDisplay();
+        }
+
+        function quizNext() {
+            quizCurrent++;
+            renderQuestion();
+        }
+
+        function updateScoreDisplay() {
+            var total = quizCurrent + (quizAnswered ? 1 : 0);
+            document.getElementById('quizScoreDisplay').textContent =
+                '✅ ' + quizScore + '  ❌ ' + quizWrong +
+                (total > 0 ? '  •  ' + Math.round(quizScore / total * 100) + '% accuracy' : '');
+        }
+
+        function showResults() {
+            document.getElementById('quizProgressFill').style.width = '100%';
+            document.getElementById('quizQuestion').style.display = 'none';
+            var results = document.getElementById('quizResults');
+            results.classList.add('show');
+
+            var total    = quizQuestions.length;
+            var accuracy = Math.round(quizScore / total * 100);
+
+            // Rank assignment
+            var rank, rankClass;
+            if      (accuracy >= 95) { rank = 'SS'; rankClass = 'quiz-rank-SS'; }
+            else if (accuracy >= 88) { rank = 'S';  rankClass = 'quiz-rank-S';  }
+            else if (accuracy >= 78) { rank = 'A';  rankClass = 'quiz-rank-A';  }
+            else if (accuracy >= 65) { rank = 'B';  rankClass = 'quiz-rank-B';  }
+            else if (accuracy >= 50) { rank = 'C';  rankClass = 'quiz-rank-C';  }
+            else if (accuracy >= 35) { rank = 'D';  rankClass = 'quiz-rank-D';  }
+            else                     { rank = 'E';  rankClass = 'quiz-rank-E';  }
+
+            var rankMsg = {
+                'SS': 'Monarch-Class. Unbeatable.',
+                'S':  'Shadow Monarch Territory.',
+                'A':  'Elite Hunter. Almost perfect.',
+                'B':  'Solid work. Keep grinding.',
+                'C':  'You\'re getting there.',
+                'D':  'More revision needed.',
+                'E':  'E-rank for now. Train harder!'
+            };
+
+            document.getElementById('quizRankBadge').textContent = rank + ' RANK';
+            document.getElementById('quizRankBadge').className   = 'quiz-rank-badge ' + rankClass;
+            document.getElementById('quizScoreBig').textContent  = quizScore + ' / ' + total;
+            document.getElementById('quizScoreSub').textContent  = rankMsg[rank] + '  •  ' + accuracy + '% accuracy';
+            document.getElementById('bdCorrect').textContent     = quizScore;
+            document.getElementById('bdWrong').textContent       = quizWrong;
+            document.getElementById('bdAccuracy').textContent    = accuracy + '%';
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (!document.getElementById('quizModal').classList.contains('open')) return;
+            if (e.key === 'Escape') { closeQuiz(); return; }
+            // A/B/C/D keyboard shortcuts for answering
+            var letters = ['a','b','c','d'];
+            var idx = letters.indexOf(e.key.toLowerCase());
+            if (idx >= 0 && !quizAnswered) {
+                var opts = document.getElementById('qOptions').querySelectorAll('.quiz-opt');
+                if (opts[idx]) opts[idx].click();
+            }
+            // Enter / Space to advance
+            if ((e.key === 'Enter' || e.key === ' ') && quizAnswered) {
+                e.preventDefault();
+                quizNext();
+            }
+        });
+
+        // =============== INTERMEDIATES MODAL ===============
+        function openIntermediates() {
+            const m = document.getElementById('intModal');
+            m.classList.add('open');
+            document.body.style.overflow = 'hidden';
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([m]).catch(() => {});
+            }
+        }
+        function closeIntermediates() {
+            document.getElementById('intModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        function intTab(btn, panelId) {
+            document.querySelectorAll('.int-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.int-panel').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(panelId).classList.add('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeIntermediates();
+        });
+
     </script>
+
+    <!-- ===================== LANDSCAPE PREVIEW MODAL ===================== -->
+    <div id="lsModal" role="dialog" aria-label="Landscape Table Preview">
+        <div id="lsModalBar">
+            <h3><i class="fa-solid fa-table" style="margin-right:.4rem"></i>Export Preview — Landscape Table</h3>
+            <button class="ls-print-btn" onclick="lsPrint()">
+                <i class="fa-solid fa-print"></i> Print / Save PDF
+            </button>
+            <button class="ls-close-btn" onclick="closeLsModal()">
+                <i class="fa-solid fa-xmark"></i> Close
+            </button>
+        </div>
+        <div id="lsModalBody"></div>
+    </div>
+
+    <!-- ===================== QUIZ MODAL ===================== -->
+    <div id="quizModal" role="dialog" aria-modal="true" aria-label="Reaction Quiz"
+         onclick="if(event.target===this)closeQuiz()">
+      <div id="quizBox">
+
+        <div id="quizHeader">
+          <i class="fa-solid fa-bolt text-emerald-300" style="font-size:1.1rem"></i>
+          <h2>Reaction Identification Quiz</h2>
+          <div id="quizQCounter" style="font-size:.75rem;color:rgba(255,255,255,.6);font-weight:700"></div>
+          <button onclick="closeQuiz()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:1.4rem;cursor:pointer;padding:0 0 0 .5rem;line-height:1">&times;</button>
+        </div>
+        <div id="quizProgressBar"><div id="quizProgressFill" style="width:0%"></div></div>
+
+        <!-- Question panel -->
+        <div id="quizBody">
+          <div id="quizQuestion">
+            <div class="quiz-chapter-tag" id="qChapter"></div>
+            <div class="quiz-q-num"   id="qNum"></div>
+            <div class="quiz-rxn-name" id="qName"></div>
+            <div class="quiz-equation-box" id="qEquation"></div>
+            <div class="quiz-ask">Which reagent / condition drives this transformation?</div>
+            <div class="quiz-options" id="qOptions"></div>
+            <div id="quizFeedback"></div>
+            <div id="quizFooter">
+              <div id="quizScoreDisplay"></div>
+              <button class="quiz-nav-btn" id="quizRestartBtn" onclick="startQuiz()" style="display:none">
+                <i class="fa-solid fa-rotate-right"></i> Restart
+              </button>
+              <button class="quiz-nav-btn" id="quizNextBtn" onclick="quizNext()">
+                Next <i class="fa-solid fa-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Results screen -->
+          <div id="quizResults">
+            <div style="font-size:.8rem;color:var(--ink-soft);letter-spacing:.1em;text-transform:uppercase;font-weight:700">QUEST COMPLETE</div>
+            <div class="quiz-rank-badge" id="quizRankBadge"></div>
+            <div style="font-size:.8rem;color:var(--ink-soft);margin-bottom:.2rem">RANK ACHIEVED</div>
+            <div class="quiz-score-big" id="quizScoreBig"></div>
+            <div style="font-size:.8rem;color:var(--ink-soft)" id="quizScoreSub"></div>
+            <div class="quiz-breakdown">
+              <div class="quiz-bd-item quiz-bd-correct">Correct<span id="bdCorrect">0</span></div>
+              <div class="quiz-bd-item quiz-bd-wrong">Wrong<span id="bdWrong">0</span></div>
+              <div class="quiz-bd-item quiz-bd-skip">Accuracy<span id="bdAccuracy">0%</span></div>
+            </div>
+            <div style="margin-top:1.25rem;display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap">
+              <button class="quiz-nav-btn" id="quizPlayAgain" onclick="startQuiz()"
+                style="background:var(--teal);color:#fff;padding:.6rem 1.4rem">
+                <i class="fa-solid fa-rotate-right"></i> Play Again
+              </button>
+              <button class="quiz-nav-btn" onclick="closeQuiz()"
+                style="background:var(--line);color:var(--ink);padding:.6rem 1.4rem">
+                <i class="fa-solid fa-xmark"></i> Close
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===================== INTERMEDIATES MODAL ===================== -->
+    <div id="intModal" role="dialog" aria-modal="true" aria-label="Reaction Intermediates" onclick="if(event.target===this)closeIntermediates()">
+      <div id="intModalBox">
+
+        <!-- Header -->
+        <div id="intModalHeader">
+          <div class="flex-1">
+            <h2 class="font-display text-xl font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-atom text-amber-300"></i> Reaction Intermediates &amp; Stability
+            </h2>
+            <p class="text-white/60 text-xs mt-0.5">Carbocations · Carbanions · Free Radicals · Carbenes · Nitrenes · Arynes · Enolates</p>
+          </div>
+          <button onclick="closeIntermediates()" class="text-white/50 hover:text-white text-2xl leading-none px-2" aria-label="Close">&times;</button>
+        </div>
+
+        <!-- Tab bar -->
+        <div id="intTabBar">
+          <button class="int-tab active" onclick="intTab(this,'iC+')" title="Carbocations">
+            <i class="fa-solid fa-circle-plus"></i> Carbocations
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iC-')" title="Carbanions">
+            <i class="fa-solid fa-circle-minus"></i> Carbanions
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iRad')" title="Free Radicals">
+            <i class="fa-solid fa-sun"></i> Free Radicals
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iCarb')" title="Carbenes">
+            <i class="fa-solid fa-bolt"></i> Carbenes
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iNit')" title="Nitrenes">
+            <i class="fa-solid fa-nitrogen text-xs"></i> Nitrenes
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iAryne')" title="Arynes">
+            <i class="fa-solid fa-ring"></i> Arynes
+          </button>
+          <button class="int-tab" onclick="intTab(this,'iEnol')" title="Enolates">
+            <i class="fa-solid fa-equals"></i> Enolates
+          </button>
+        </div>
+
+        <!-- ── Panel: Carbocations ── -->
+        <div class="int-panel active" id="iC+">
+          <div class="int-section-title"><i class="fa-solid fa-circle-plus text-emerald-500"></i> Carbocations (Carbonium Ions)</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">A carbon bearing only <strong>6 electrons</strong> and a formal positive charge. Planar, sp² hybridised. Key intermediate in S<sub>N</sub>1, E1, electrophilic addition &amp; Friedel–Crafts.</p>
+
+          <div class="int-section-title" style="font-size:.82rem;margin-top:0">Stability Order</div>
+          <div class="stab-ladder" style="min-height:140px">
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:24px;background:#64748b;opacity:.5"></div>
+              <div class="stab-label">Methyl<br><span style="font-size:.65rem">CH₃⁺</span></div>
+              <div class="stab-sub">Least stable</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:44px;background:#94a3b8"></div>
+              <div class="stab-label">1° Primary</div>
+              <div class="stab-sub">RCH₂⁺</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:70px;background:#2dd4bf"></div>
+              <div class="stab-label">2° Secondary</div>
+              <div class="stab-sub">R₂CH⁺</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:96px;background:#0d9488"></div>
+              <div class="stab-label">3° Tertiary</div>
+              <div class="stab-sub">R₃C⁺</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:115px;background:#f59e0b"></div>
+              <div class="stab-label">Allylic / Benzylic</div>
+              <div class="stab-sub">C=C–C⁺ / Ph–C⁺</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:135px;background:#10b981"></div>
+              <div class="stab-label">Bridgehead (non-classical)</div>
+              <div class="stab-sub">e.g. norbornyl</div>
+            </div>
+          </div>
+          <p style="font-size:.73rem;color:var(--ink-soft);margin:.2rem 0 .9rem">Vinyl (CH₂=CH⁺) &amp; Aryl cations are extremely unstable — essentially inaccessible under normal conditions.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact">
+              <div class="int-fact-title">🔑 Why 3° &gt; 2° &gt; 1°?</div>
+              <p>Hyperconjugation (C–H σ → empty p) and inductive electron donation from alkyl groups delocalise the positive charge. More alkyl groups = more hyperconjugation = greater stability.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚡ Allylic / Benzylic Boost</div>
+              <p>Resonance delocalises charge over π system. Allylic: two contributing structures. Benzylic: four+ structures around the ring. A benzylic tertiary cation is the most stable common intermediate.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔄 Rearrangements</div>
+              <p>Carbocations rearrange to a more stable isomer via <strong>1,2-hydride shifts</strong> or <strong>1,2-alkyl shifts</strong> (Wagner–Meerwein). Always check if a rearrangement is possible in JEE problems!</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">📐 Geometry</div>
+              <p>sp² planar. The empty p-orbital is perpendicular to the plane — allows overlap with adjacent π bonds (allylic/benzylic). This is why bridging locks disrupt stability in anti-Bredt ions.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 JEE Trap: Vinyl Cations</div>
+              <p>Vinyl cations are sp hybridised (linear). The positive charge is in a sp orbital — not delocalised by the π bond. Hence they are far less stable than expected and almost never form in S<sub>N</sub>1.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🌟 Non-classical Ions</div>
+              <p>e.g. 2-norbornyl cation — stabilised by σ-bridging (σ-participation). Not a focus of JEE Main, but does appear in Advanced context questions.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-section-title" style="font-size:.8rem"><i class="fa-solid fa-key text-amber-400"></i> Memory Order</div>
+          <div class="int-eq">Methyl &lt; 1° &lt; 2° &lt; 3° &lt; Allylic ≈ Benzylic &lt; Tropylium (C₇H₇⁺)</div>
+          <p style="font-size:.73rem;color:var(--ink-soft)">Tropylium ion is aromatic (6π electrons on a 7-membered ring) — the most stable common carbocation.</p>
+        </div>
+
+        <!-- ── Panel: Carbanions ── -->
+        <div class="int-panel" id="iC-">
+          <div class="int-section-title"><i class="fa-solid fa-circle-minus text-red-500"></i> Carbanions</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Carbon with <strong>8 electrons</strong> (lone pair + 3 bonds) and formal negative charge. sp³ pyramidal. Key intermediates in E1cb, organometallic reactions, aldol &amp; Claisen condensations.</p>
+
+          <div class="int-section-title" style="font-size:.82rem;margin-top:0">Stability Order (Inductive only — no resonance)</div>
+          <div class="stab-ladder" style="min-height:130px">
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:24px;background:#64748b;opacity:.5"></div>
+              <div class="stab-label">3° Tertiary</div><div class="stab-sub">R₃C⁻ least</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:55px;background:#94a3b8"></div>
+              <div class="stab-label">2° Secondary</div><div class="stab-sub">R₂CH⁻</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:80px;background:#f87171"></div>
+              <div class="stab-label">1° Primary</div><div class="stab-sub">RCH₂⁻</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:100px;background:#ef4444"></div>
+              <div class="stab-label">Methyl</div><div class="stab-sub">CH₃⁻</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:120px;background:#f59e0b"></div>
+              <div class="stab-label">Allylic / Benzylic</div><div class="stab-sub">Resonance ↑</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:135px;background:#dc2626"></div>
+              <div class="stab-label">α to C=O</div><div class="stab-sub">Enolate</div>
+            </div>
+          </div>
+          <p style="font-size:.73rem;color:var(--ink-soft);margin:.2rem 0 .9rem">Alkyl groups are electron-donating (destabilise carbanion). EWG (C=O, CN, NO₂) adjacent to carbanion strongly stabilise it via resonance &amp; induction.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact">
+              <div class="int-fact-title">🔑 Why opposite to carbocations?</div>
+              <p>Alkyl groups donate electrons. For carbocations this helps (disperses +charge). For carbanions it hurts (adds more –charge). Hence the order reverses.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">📡 Hybridisation Effect</div>
+              <p>sp &gt; sp² &gt; sp³ in terms of carbanion stability. More s-character = electrons held closer to nucleus = more stable. Acetylide (sp) &gt; vinyl (sp²) &gt; alkyl (sp³). This is why terminal alkynes are acidic (pKₐ ≈ 25).</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🌀 EWG Stabilisation</div>
+              <p>–CN, –NO₂, –COR, –COOR adjacent to carbanion allow resonance delocalisation of negative charge onto electronegative atoms (N, O). Each additional EWG lowers pKₐ significantly.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 Key Acidity Order (pKₐ)</div>
+              <p>RC≡CH (≈25) &lt; ArH (≈43) &lt; R₂C=CH₂ (≈44) &lt; RCH₂–R (≈50). Lower pKₐ = more stable conjugate base (carbanion).</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-eq">3° &lt; 2° &lt; 1° &lt; Methyl &lt; Allylic ≈ Benzylic &lt; α-carbonyl (Enolate) &lt; Acetylide</div>
+        </div>
+
+        <!-- ── Panel: Free Radicals ── -->
+        <div class="int-panel" id="iRad">
+          <div class="int-section-title"><i class="fa-solid fa-sun text-orange-400"></i> Free Radicals</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Carbon with <strong>7 electrons</strong> — one unpaired electron. Planar or slightly pyramidal sp² centre. Formed by homolytic cleavage (hν or peroxides). Key in halogenation, polymerisation, autoxidation.</p>
+
+          <div class="int-section-title" style="font-size:.82rem;margin-top:0">Stability Order</div>
+          <div class="stab-ladder" style="min-height:130px">
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:24px;background:#64748b;opacity:.5"></div>
+              <div class="stab-label">Methyl</div><div class="stab-sub">•CH₃</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:50px;background:#94a3b8"></div>
+              <div class="stab-label">1° Primary</div><div class="stab-sub">RCH₂•</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:76px;background:#fb923c"></div>
+              <div class="stab-label">2° Secondary</div><div class="stab-sub">R₂CH•</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:102px;background:#f97316"></div>
+              <div class="stab-label">3° Tertiary</div><div class="stab-sub">R₃C•</div>
+            </div>
+            <div class="stab-arrow">›</div>
+            <div class="stab-rung">
+              <div class="stab-bar" style="height:125px;background:#eab308"></div>
+              <div class="stab-label">Allylic / Benzylic</div><div class="stab-sub">C=C–C• / Ph–C•</div>
+            </div>
+          </div>
+
+          <div class="int-fact-grid">
+            <div class="int-fact">
+              <div class="int-fact-title">🔑 Parallel with Carbocations</div>
+              <p>The stability trend mirrors carbocations: hyperconjugation and resonance still operate on the half-filled orbital. The stabilisation is weaker than for the full empty orbital, but the trend is the same.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚙️ Selectivity vs Reactivity</div>
+              <p>Cl• is highly reactive → low selectivity (attacks 1°, 2°, 3° almost equally). Br• is less reactive → high selectivity (strongly prefers 3° &gt; 2° &gt;&gt; 1°). More stable TS = more selective radical.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🌀 Allylic Radicals</div>
+              <p>The unpaired electron is delocalised across three carbons (resonance). NBS (N-bromosuccinimide) generates allylic radicals selectively. Used to make allylic bromides in synthesis.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 Persistent Radicals</div>
+              <p>Triphenylmethyl radical (Ph₃C•) is stable enough to exist in solution due to extensive benzylic resonance and steric protection. A classic JEE Advanced example of a stable free radical.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔗 Chain Mechanism</div>
+              <p><strong>Initiation</strong> (X₂ → 2X•) → <strong>Propagation</strong> (X• + RH → HX + R•; R• + X₂ → RX + X•) → <strong>Termination</strong> (radical + radical → product). Each step has defined ΔH.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">📊 BDE &amp; Radical Stability</div>
+              <p>Lower BDE of C–H = more stable radical formed on homolysis. BDE (kcal/mol): CH₃–H 105 &gt; 1°–H 100 &gt; 2°–H 98.5 &gt; 3°–H 96.5 &gt; Allylic–H 88 &gt; Benzylic–H 90.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-eq">Methyl &lt; 1° &lt; 2° &lt; 3° &lt; Allylic ≈ Benzylic &lt; Diphenylmethyl &lt; Triphenylmethyl</div>
+        </div>
+
+        <!-- ── Panel: Carbenes ── -->
+        <div class="int-panel" id="iCarb">
+          <div class="int-section-title"><i class="fa-solid fa-bolt text-violet-500"></i> Carbenes (:CR₂)</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Neutral carbon with <strong>only 6 electrons</strong> and <strong>two non-bonding electrons</strong>. Generated by α-elimination or photolysis. Extremely reactive electrophiles.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact" style="border-color:#8b5cf6;background:#f5f3ff">
+              <div class="int-fact-title" style="color:#5b21b6">🔬 Singlet Carbene</div>
+              <p>Both non-bonding electrons in the same sp² orbital (paired, ↑↓). sp² hybridised. More reactive, electrophilic. Gives <strong>stereospecific</strong> syn addition to alkenes (cis-alkene → cis-cyclopropane).</p>
+            </div>
+            <div class="int-fact" style="border-color:#db2777;background:#fdf2f8">
+              <div class="int-fact-title" style="color:#9d174d">🌀 Triplet Carbene</div>
+              <p>Two electrons in <strong>different</strong> orbitals with parallel spins (↑↑). Diradical character. Less reactive. Gives <strong>non-stereospecific</strong> addition (both cis and trans products). Usually the ground state.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚗️ Generation</div>
+              <p>CHCl₃ + KOH → :CCl₂ (dichlorocarbene). CH₂N₂ hν → :CH₂ + N₂ (methylene). Also from Simmons–Smith reagent (carbenoid). <strong>:CCl₂ is singlet; :CH₂ is triplet in ground state.</strong></p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔑 Key Reactions</div>
+              <p>① Cyclopropanation of alkenes (syn addition for singlet). ② Insertion into C–H bonds. ③ Rearrangement. ④ Reaction with O₂ (triplet). Simmons–Smith uses carbenoid (:CH₂ from Zn/Cu) for stereospecific cyclopropanation.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">📐 Structure</div>
+              <p>Singlet: sp² bent (~100–110°). Triplet: sp² or sp, bent or linear depending on substituents. Lone pair occupies sp² orbital in singlet; half-filled orbitals in triplet are sp² and p.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 JEE Focus</div>
+              <p>Most commonly tested: dichlorocarbene from CHCl₃/KOH, its electrophilic syn addition to alkenes giving gem-dihalocyclopropanes. Stereochemistry of the alkene is retained in the product.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-eq">CHCl₃ + KOH → :CCl₂  →  alkene → 1,1-dihalocyclopropane (syn)</div>
+        </div>
+
+        <!-- ── Panel: Nitrenes ── -->
+        <div class="int-panel" id="iNit">
+          <div class="int-section-title"><i class="fa-solid fa-n text-blue-500"></i> Nitrenes (R–N:)</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Nitrogen analogues of carbenes — a nitrogen atom with only <strong>6 electrons</strong>. Highly reactive, electrophilic. Generated by thermolysis or photolysis of azides or nitroso compounds.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact" style="border-color:#2563eb;background:#eff6ff">
+              <div class="int-fact-title" style="color:#1e40af">🔬 Formation</div>
+              <p>R–N₃ <span style="font-size:.72rem">(hν or Δ)</span> → R–N: + N₂. Also from Hofmann bromamide reaction (intermediate is nitrene-like acyl nitrene). Curtius and Lossen rearrangements involve nitrene intermediates.</p>
+            </div>
+            <div class="int-fact" style="border-color:#2563eb;background:#eff6ff">
+              <div class="int-fact-title" style="color:#1e40af">⚗️ Reactions</div>
+              <p>① <strong>Insertion</strong> into C–H bonds (like carbenes). ② <strong>Addition</strong> to π bonds → aziridines. ③ <strong>Rearrangement</strong> — acyl nitrenes rearrange to isocyanates (Curtius: RCO–N: → R–N=C=O).</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔄 Key Rearrangements Involving Nitrenes</div>
+              <p><strong>Hofmann:</strong> RCONH₂ + Br₂/KOH → RNH₂ (nitrene-type). <strong>Curtius:</strong> RCOCl + NaN₃ → RCON₃ → R–N=C=O → RNH₂. <strong>Schmidt:</strong> Carboxylic acid + HN₃ → isocyanate → amine.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 JEE Focus</div>
+              <p>Primarily tested in context of Hofmann, Curtius, Lossen, and Schmidt rearrangements. Remember: all these convert RCOX → RNH₂ (one carbon less). Nitrene is the mechanistic intermediate.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-eq">R–CO–N: (acyl nitrene) → [1,2-shift] → R–N=C=O (isocyanate) → + H₂O → RNH₂</div>
+        </div>
+
+        <!-- ── Panel: Arynes ── -->
+        <div class="int-panel" id="iAryne">
+          <div class="int-section-title"><i class="fa-solid fa-ring text-indigo-500"></i> Arynes (Benzynes)</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Highly strained ring intermediates with a <strong>formal triple bond</strong> in a benzene ring. Generated by strong base + aryl halide (elimination). Key in nucleophilic aromatic substitution via elimination–addition.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact" style="border-color:#4338ca;background:#eef2ff">
+              <div class="int-fact-title" style="color:#3730a3">🔬 Structure</div>
+              <p>Benzyne (1,2-didehydrobenzene): a 6-membered ring with an additional π bond in the plane of the ring using sp² orbital overlap. Extremely strained and reactive. Cannot be isolated.</p>
+            </div>
+            <div class="int-fact" style="border-color:#4338ca;background:#eef2ff">
+              <div class="int-fact-title" style="color:#3730a3">⚗️ Generation</div>
+              <p>ArX + strong base (NaNH₂, n-BuLi) → ArX loses HX → benzyne. Alternatively, anthranilic acid → benzyne + CO₂ + N₂ (thermolysis of diazonium salt). Also: fluorobenzene + n-BuLi.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔑 Elimination–Addition Mechanism</div>
+              <p>Base abstracts ortho-H → benzyne → nucleophile adds (can add at either carbon of the triple bond) → product mixture. Explains why halobenzene + NaOH/high T gives both ortho-substituted and meta products — actually it's the benzyne migrating.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🧪 JEE Trap: Isotope Labelling</div>
+              <p>Classic JEE Advanced test: chlorobenzene-1-¹⁴C + NaNH₂ → aniline with ¹⁴C at C1 and C2 equally (50:50). Proves benzyne intermediate — Nu can attack either end of the strained triple bond.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚡ Reactivity</div>
+              <p>Acts as a <strong>dienophile</strong> in Diels–Alder with dienes (useful in synthesis). Reacts with nucleophiles by addition (not substitution). Can also dimerize at very low temperatures.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-eq">C₆H₅Cl + NaNH₂ → [C₆H₄] (benzyne) + NaCl → + NH₃ → C₆H₅NH₂ (aniline)</div>
+        </div>
+
+        <!-- ── Panel: Enolates ── -->
+        <div class="int-panel" id="iEnol">
+          <div class="int-section-title"><i class="fa-solid fa-equals text-green-600"></i> Enolates &amp; Enols</div>
+          <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:.6rem">Stabilised carbanions formed α to a carbonyl. The most important synthetic intermediates in JEE — central to aldol, Claisen, Michael, Knoevenagel, and many named reactions.</p>
+
+          <div class="int-fact-grid">
+            <div class="int-fact" style="border-color:#16a34a;background:#f0fdf4">
+              <div class="int-fact-title" style="color:#15803d">🔄 Enol–Enolate Relationship</div>
+              <p><strong>Enol</strong>: neutral tautomer of a ketone (OH on sp² carbon). <strong>Enolate</strong>: conjugate base (O⁻, charge delocalised to α-C). Base deprotonates α to C=O to give enolate. Enolate is the nucleophile; enol is the neutral form.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚖️ Kinetic vs Thermodynamic Enolate</div>
+              <p><strong>Kinetic</strong> (LDA, −78°C, fast): deprotonates the less hindered (less substituted) α-carbon. <strong>Thermodynamic</strong> (NaOEt, equilibrating): gives more substituted (more stable) enolate. JEE Advanced tests this distinction.</p>
+            </div>
+            <div class="int-fact" style="border-color:#16a34a;background:#f0fdf4">
+              <div class="int-fact-title" style="color:#15803d">📊 Enolate Stability</div>
+              <p>More EWG adjacent = more stable enolate (more acidic α-H). Malonic ester (pKₐ ≈ 13) &gt; acetoacetic ester (pKₐ ≈ 11) &gt; simple ketone (pKₐ ≈ 20) &gt; ester (pKₐ ≈ 25) &gt; amide (pKₐ ≈ 30).</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">⚗️ Alkylation</div>
+              <p>Enolate + R–X (SN2) → α-alkylated product. Malonic ester synthesis: allows introduction of R group, then decarboxylation gives carboxylic acid (RCH₂COOH). Acetoacetic ester synthesis: gives methyl ketones.</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🔗 Aldol Condensation</div>
+              <p>Enolate (nucleophile) attacks aldehyde/ketone carbonyl (electrophile) → β-hydroxy carbonyl (aldol product) → dehydration (Δ or base) → α,β-unsaturated carbonyl (aldol condensation product).</p>
+            </div>
+            <div class="int-fact">
+              <div class="int-fact-title">🌀 Michael Addition</div>
+              <p>Enolate (Michael donor, 1,4-addition) adds to α,β-unsaturated carbonyl (Michael acceptor) at the β-carbon. Combines with aldol to give Robinson annulation — the core of steroid synthesis. High-yield JEE topic.</p>
+            </div>
+          </div>
+
+          <hr class="int-rule">
+          <div class="int-section-title" style="font-size:.8rem"><i class="fa-solid fa-key text-amber-400"></i> pKₐ of α–H (Approximate)</div>
+          <div class="int-eq">Malonate (13) &lt; Acetoacetate (11) &lt; CHCl₃ (25) &lt; Ketone (20) &lt; Ester (25) &lt; Amide (30) &lt; Alkane (50)</div>
+          <p style="font-size:.73rem;color:var(--ink-soft);margin-top:.4rem">Lower pKₐ = more acidic α-H = more stable enolate. Two flanking C=O groups dramatically lower pKₐ (malonate, acetylacetone).</p>
+        </div>
+
+      </div><!-- /intModalBox -->
+    </div><!-- /intModal -->
+
     <div id="printExport"></div>
 </body>
 </html>
